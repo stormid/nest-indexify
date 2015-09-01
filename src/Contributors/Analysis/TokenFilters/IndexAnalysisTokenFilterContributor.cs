@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nest.Indexify.Analysis.TokenFilters
+namespace Nest.Indexify.Contributors.Analysis.TokenFilters
 {
 	public abstract class IndexAnalysisTokenFilterContributor : IndexAnalysisContributor<TokenFilterBase>
 	{

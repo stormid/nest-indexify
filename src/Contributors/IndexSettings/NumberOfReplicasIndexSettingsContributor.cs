@@ -9,7 +9,12 @@ namespace Nest.Indexify.Contributors.IndexSettings
             _replicas = replicas;
         }
 
-        public override void Contribute(CreateIndexDescriptor descriptor)
+        public override bool CanContribute(ICreateIndexRequest indexRequest)
+        {
+            return true;
+        }
+
+        public override void ContributeCore(CreateIndexDescriptor descriptor)
         {
             if (_replicas.HasValue && _replicas >= 0)
             {

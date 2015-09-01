@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Nest.Indexify.Contributors
 {
@@ -15,7 +16,12 @@ namespace Nest.Indexify.Contributors
 		{
 		}
 
-		public override void Contribute(CreateIndexDescriptor descriptor)
+	    public sealed override bool CanContribute(ICreateIndexRequest indexRequest)
+	    {
+	        return true;
+	    }
+
+	    public override void ContributeCore(CreateIndexDescriptor descriptor)
 		{
 			foreach (var contributor in _contributors)
 			{

@@ -52,11 +52,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Analysis\Analyzers\IndexAnalysisAnalyzerContributor.cs" />
-    <Compile Include="Analysis\CharFilters\IndexAnalysisCharFilterContributor.cs" />
-    <Compile Include="Analysis\IndexAnalysisContributor.cs" />
-    <Compile Include="Analysis\TokenFilters\IndexAnalysisTokenFilterContributor.cs" />
-    <Compile Include="Analysis\Tokenizers\IndexAnalysisTokenizerContributor.cs" />
+    <Compile Include="Contributors\Analysis\Analyzers\IndexAnalysisAnalyzerContributor.cs" />
+    <Compile Include="Contributors\Analysis\CharFilters\IndexAnalysisCharFilterContributor.cs" />
+    <Compile Include="Contributors\Analysis\IndexAnalysisContributor.cs" />
+    <Compile Include="Contributors\Analysis\TokenFilters\EdgeNGramTokenFilterContributor.cs" />
+    <Compile Include="Contributors\Analysis\TokenFilters\IndexAnalysisTokenFilterContributor.cs" />
+    <Compile Include="Contributors\Analysis\Tokenizers\IndexAnalysisTokenizerContributor.cs" />
+    <Compile Include="Contributors\Autocomplete\AutoCompleteAnalyzerContributor.cs" />
+    <Compile Include="Contributors\Autocomplete\AutoCompleteIndexAnalysisContributor.cs" />
     <Compile Include="Contributors\CompositeElasticsearchIndexCreationContributor.cs" />
     <Compile Include="Contributors\IndexSettings\AddAliasIndexSettingsContributor.cs" />
     <Compile Include="Contributors\IndexSettings\IndexSettingsContributor.cs" />

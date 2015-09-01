@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nest.Indexify.Analysis.Tokenizers
+namespace Nest.Indexify.Contributors.Analysis.Tokenizers
 {
 	public abstract class IndexAnalysisTokenizerContributor : IndexAnalysisContributor<TokenizerBase>
 	{

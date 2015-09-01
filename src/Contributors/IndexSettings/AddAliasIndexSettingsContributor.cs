@@ -9,7 +9,7 @@ namespace Nest.Indexify.Contributors.IndexSettings
             _aliasName = aliasName;
         }
 
-        public override void Contribute(CreateIndexDescriptor descriptor)
+        public override void ContributeCore(CreateIndexDescriptor descriptor)
         {
             descriptor.AddAlias(_aliasName, AddAliasCore);
         }

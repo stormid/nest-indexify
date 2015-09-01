@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nest.Indexify.Analysis.CharFilters
+namespace Nest.Indexify.Contributors.Analysis.CharFilters
 {
 	public abstract class IndexAnalysisCharFilterContributor : IndexAnalysisContributor<CharFilterBase>
 	{

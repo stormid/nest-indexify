@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Nest.Indexify.Contributors;
 
 namespace Nest.Indexify
@@ -18,8 +19,16 @@ namespace Nest.Indexify
         {
             var indexName = _client.Infer.DefaultIndex;
             _contributors.UnionWith(additionalContributors);
-            var response = _client.CreateIndex(indexName, i => ContributeCore(i, _contributors));
-            // TODO what to do here on error?
+
+            _client.CreateIndex(indexName, i => ContributeCore(i, _contributors));
+        }
+
+        public async Task CreateAsync(params IElasticsearchIndexCreationContributor[] additionalContributors)
+        {
+            var indexName = _client.Infer.DefaultIndex;
+            _contributors.UnionWith(additionalContributors);
+
+            await _client.CreateIndexAsync(indexName, i => ContributeCore(i, _contributors));
         }
 
         protected void AddContributor(IElasticsearchIndexCreationContributor contributor)

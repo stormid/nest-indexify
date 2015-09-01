@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nest.Indexify", "src\Nest.Indexify.csproj", "{8C0BDDEA-C3B4-4355-A549-D67423CADD17}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AE94445A-437E-45EC-9F20-623F11F768E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nest.Indexify.Tests", "Nest.Indexify.Tests\Nest.Indexify.Tests.csproj", "{B0A4310F-4D99-41AE-8F34-947FAB1D28EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +19,15 @@ Global
 		{8C0BDDEA-C3B4-4355-A549-D67423CADD17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C0BDDEA-C3B4-4355-A549-D67423CADD17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C0BDDEA-C3B4-4355-A549-D67423CADD17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0A4310F-4D99-41AE-8F34-947FAB1D28EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0A4310F-4D99-41AE-8F34-947FAB1D28EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0A4310F-4D99-41AE-8F34-947FAB1D28EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0A4310F-4D99-41AE-8F34-947FAB1D28EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B0A4310F-4D99-41AE-8F34-947FAB1D28EB} = {AE94445A-437E-45EC-9F20-623F11F768E9}
 	EndGlobalSection
 EndGlobal

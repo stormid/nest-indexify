@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nest.Indexify.Analysis.Analyzers
+namespace Nest.Indexify.Contributors.Analysis.Analyzers
 {
 	public abstract class IndexAnalysisAnalyzerContributor : IndexAnalysisContributor<AnalyzerBase>
 	{
-		protected IndexAnalysisAnalyzerContributor(int order = 0)
+		protected IndexAnalysisAnalyzerContributor(int order = 0) : base(order)
 		{
-			Order = order;
 		}
 
 		protected override AnalysisDescriptor Contribute(AnalysisDescriptor descriptor, IEnumerable<KeyValuePair<string, AnalyzerBase>> build)
