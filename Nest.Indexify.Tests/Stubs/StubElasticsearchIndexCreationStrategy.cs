@@ -1,6 +1,6 @@
 using Nest.Indexify.Contributors;
 
-namespace Nest.Indexify.Tests
+namespace Nest.Indexify.Tests.Stubs
 {
     public class StubElasticsearchIndexCreationStrategy : ElasticsearchIndexCreationStrategy
     {

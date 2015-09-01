@@ -14,6 +14,11 @@ namespace Nest.Indexify.Contributors.IndexSettings
             descriptor.AddAlias(_aliasName, AddAliasCore);
         }
 
+        public override bool CanContribute(ICreateIndexRequest indexRequest)
+        {
+            return indexRequest.IndexSettings.Aliases == null || !indexRequest.IndexSettings.Aliases.ContainsKey(_aliasName);
+        }
+
         private CreateAliasDescriptor AddAliasCore(CreateAliasDescriptor descriptor)
         {
             AddAlias(descriptor);

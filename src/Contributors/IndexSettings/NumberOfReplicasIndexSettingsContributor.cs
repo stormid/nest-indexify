@@ -4,7 +4,7 @@ namespace Nest.Indexify.Contributors.IndexSettings
     {
         private readonly int? _replicas;
 
-        public NumberOfReplicasIndexSettingsContributor(int? replicas, int order = 99) : base(order)
+        public NumberOfReplicasIndexSettingsContributor(int? replicas = null, int order = 99) : base(order)
         {
             _replicas = replicas;
         }

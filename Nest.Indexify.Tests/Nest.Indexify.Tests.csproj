@@ -79,16 +79,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Contributors\AddAliasIndexCreationContributorSpecs.cs" />
+    <Compile Include="Contributors\EnglishAnalysisIndexCreationContributorSpecs.cs" />
+    <Compile Include="Contributors\AutocompleteAnalysisIndexCreationContributorSpecs.cs" />
+    <Compile Include="Contributors\HtmlStripCharFilterIndexCreationContributorSpecs.cs" />
+    <Compile Include="Contributors\IndexSettingsContributorSpecs.cs" />
+    <Compile Include="Contributors\MappingCharFilterIndexCreationContributorSpecs.cs" />
+    <Compile Include="Contributors\PatternReplacementCharFilterIndexCreationContributorSpecs.cs" />
+    <Compile Include="Contributors\PhoneticAnalysisIndexCreationContributorSpecs.cs" />
+    <Compile Include="Contributors\WhenAddingAutocompleteAnalyzerWithoutTokenFilter.cs" />
+    <Compile Include="Contributors\WhenIndexCreationContributionCanContribute.cs" />
+    <Compile Include="Contributors\WhenIndexCreationContributionCanNotContribute.cs" />
     <Compile Include="ElasticClientContextBase.cs" />
-    <Compile Include="ElasticsearchIndexCreationContributorSortingSpec.cs" />
+    <Compile Include="Contributors\ElasticsearchIndexCreationContributorSortingSpec.cs" />
     <Compile Include="ElasticsearchIndexCreationStrategySpecs.cs" />
     <Compile Include="IndexCreationStrategyContext.cs" />
-    <Compile Include="NumberOfReplicasIndexCreationContributor.cs" />
-    <Compile Include="NumberOfShardsIndexCreationContributor.cs" />
+    <Compile Include="Contributors\NumberOfReplicasIndexCreationContributorSpec.cs" />
+    <Compile Include="Contributors\NumberOfShardsIndexCreationContributorSpecs.cs" />
     <Compile Include="Specification\ContextSpecification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StubElasticsearchIndexCreationContributor.cs" />
-    <Compile Include="StubElasticsearchIndexCreationStrategy.cs" />
+    <Compile Include="Stubs\StubElasticsearchIndexCreationContributor.cs" />
+    <Compile Include="Stubs\StubElasticsearchIndexCreationStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -99,9 +110,7 @@
       <Name>Nest.Indexify</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Stubs\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

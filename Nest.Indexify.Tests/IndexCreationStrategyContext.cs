@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nest.Indexify.Contributors;
 using Nest.Indexify.Tests.Specification;
+using Nest.Indexify.Tests.Stubs;
 
 namespace Nest.Indexify.Tests
 {

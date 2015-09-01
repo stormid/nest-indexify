@@ -5,6 +5,8 @@ namespace Nest.Indexify.Contributors.Analysis.CharFilters
 {
 	public abstract class IndexAnalysisCharFilterContributor : IndexAnalysisContributor<CharFilterBase>
 	{
+        protected IndexAnalysisCharFilterContributor(int order = 0) : base(order) { }
+
 		protected override AnalysisDescriptor Contribute(AnalysisDescriptor descriptor, IEnumerable<KeyValuePair<string, CharFilterBase>> build)
 		{
 			return descriptor.CharFilters(a =>

@@ -1,14 +1,14 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Nest.Indexify.Contributors.Analysis.Analyzers;
 
-namespace Nest.Indexify.Contributors.Autocomplete
+namespace Nest.Indexify.Contributors.Analysis.Phonetic
 {
-	public class AutoCompleteAnalyzerContributor : IndexAnalysisAnalyzerContributor
+	public class PhoneticIndexAnalyzerContributor : IndexAnalysisAnalyzerContributor
 	{
 		private readonly string _name;
 		private readonly string _tokenFilter;
 
-		public AutoCompleteAnalyzerContributor(string name, string tokenFilter, int order = 0) : base(order)
+		public PhoneticIndexAnalyzerContributor(string name, string tokenFilter, int order = 0) : base(order)
 		{
 			_name = name;
 			_tokenFilter = tokenFilter;
@@ -23,8 +23,8 @@ namespace Nest.Indexify.Contributors.Autocomplete
 		{
 			yield return new KeyValuePair<string, AnalyzerBase>(_name, new CustomAnalyzer
 			{
-				Tokenizer = new WhitespaceTokenizer().Type,
-				Filter = new[] {new LowercaseTokenFilter().Type, new AsciiFoldingTokenFilter().Type, _tokenFilter}
+				Tokenizer = new StandardTokenizer().Type,
+				Filter = new[] {new LowercaseTokenFilter().Type, _tokenFilter}
 			});
 		}
 	}

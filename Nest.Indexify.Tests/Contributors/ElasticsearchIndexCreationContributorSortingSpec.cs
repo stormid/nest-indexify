@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Nest.Indexify.Contributors;
 using Nest.Indexify.Tests.Specification;
+using Nest.Indexify.Tests.Stubs;
 using Xunit;
 
-namespace Nest.Indexify.Tests
+namespace Nest.Indexify.Tests.Contributors
 {
     public class ElasticsearchIndexCreationContributorSortingSpec : ContextSpecification<ElasticsearchIndexCreationContributorSortingSpec.IndexCreationContributorsContext>
     {
@@ -21,12 +19,12 @@ namespace Nest.Indexify.Tests
             {
                 Contributors = new List<IElasticsearchIndexCreationContributor>()
             {
-                new StubElasticsearchIndexCreationContributor(10),
-                new StubElasticsearchIndexCreationContributor(2),
-                new StubElasticsearchIndexCreationContributor(0),
-                new StubElasticsearchIndexCreationContributor(0),
-                new StubElasticsearchIndexCreationContributor(99),
-                new StubElasticsearchIndexCreationContributor(50)
+                new StubElasticsearchIndexCreationContributor(true, 10),
+                new StubElasticsearchIndexCreationContributor(true, 2),
+                new StubElasticsearchIndexCreationContributor(true, 0),
+                new StubElasticsearchIndexCreationContributor(true, 0),
+                new StubElasticsearchIndexCreationContributor(true, 99),
+                new StubElasticsearchIndexCreationContributor(true, 50)
             };
             }
 

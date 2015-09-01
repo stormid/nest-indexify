@@ -23,12 +23,12 @@ namespace Nest.Indexify
             _client.CreateIndex(indexName, i => ContributeCore(i, _contributors));
         }
 
-        public async Task CreateAsync(params IElasticsearchIndexCreationContributor[] additionalContributors)
+        public Task CreateAsync(params IElasticsearchIndexCreationContributor[] additionalContributors)
         {
             var indexName = _client.Infer.DefaultIndex;
             _contributors.UnionWith(additionalContributors);
 
-            await _client.CreateIndexAsync(indexName, i => ContributeCore(i, _contributors));
+            return _client.CreateIndexAsync(indexName, i => ContributeCore(i, _contributors));
         }
 
         protected void AddContributor(IElasticsearchIndexCreationContributor contributor)

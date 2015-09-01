@@ -36,6 +36,11 @@ namespace Nest.Indexify.Tests
                 IndexCreateRequest = cb(new CreateIndexDescriptor(Settings.Object));
             });
 
+            clientMock.Setup(s => s.CreateIndexAsync(It.IsAny<Func<CreateIndexDescriptor, CreateIndexDescriptor>>())).Callback((Func<CreateIndexDescriptor, CreateIndexDescriptor> cb) =>
+            {
+                IndexCreateRequest = cb(new CreateIndexDescriptor(Settings.Object));
+            });
+
             return SetupClient(clientMock);
         }
 

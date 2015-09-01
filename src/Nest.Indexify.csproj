@@ -53,14 +53,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contributors\Analysis\Analyzers\IndexAnalysisAnalyzerContributor.cs" />
+    <Compile Include="Contributors\Analysis\CharFilters\HtmlStripCharFilterContributor.cs" />
     <Compile Include="Contributors\Analysis\CharFilters\IndexAnalysisCharFilterContributor.cs" />
+    <Compile Include="Contributors\Analysis\CharFilters\MappingCharFilterContributor.cs" />
+    <Compile Include="Contributors\Analysis\CharFilters\PatternReplaceCharFilterContributor.cs" />
     <Compile Include="Contributors\Analysis\IndexAnalysisContributor.cs" />
+    <Compile Include="Contributors\Analysis\Phonetic\PhoneticIndexAnalysisContributor.cs" />
+    <Compile Include="Contributors\Analysis\Phonetic\PhoneticIndexAnalyzerContributor.cs" />
     <Compile Include="Contributors\Analysis\TokenFilters\EdgeNGramTokenFilterContributor.cs" />
     <Compile Include="Contributors\Analysis\TokenFilters\IndexAnalysisTokenFilterContributor.cs" />
+    <Compile Include="Contributors\Analysis\TokenFilters\PhoneticIndexTokenFilterContributor.cs" />
     <Compile Include="Contributors\Analysis\Tokenizers\IndexAnalysisTokenizerContributor.cs" />
-    <Compile Include="Contributors\Autocomplete\AutoCompleteAnalyzerContributor.cs" />
-    <Compile Include="Contributors\Autocomplete\AutoCompleteIndexAnalysisContributor.cs" />
+    <Compile Include="Contributors\Analysis\Autocomplete\AutoCompleteAnalyzerContributor.cs" />
+    <Compile Include="Contributors\Analysis\Autocomplete\AutoCompleteIndexAnalysisContributor.cs" />
+    <Compile Include="Contributors\Analysis\Tokenizers\PathHierarchyIndexTokenizerContributor.cs" />
     <Compile Include="Contributors\CompositeElasticsearchIndexCreationContributor.cs" />
+    <Compile Include="Contributors\Analysis\English\EnglishIndexAnalysisContributor.cs" />
     <Compile Include="Contributors\IndexSettings\AddAliasIndexSettingsContributor.cs" />
     <Compile Include="Contributors\IndexSettings\IndexSettingsContributor.cs" />
     <Compile Include="Contributors\IndexSettings\NumberOfReplicasIndexSettingsContributor.cs" />
