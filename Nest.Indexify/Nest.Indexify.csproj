@@ -58,9 +58,13 @@
     <Compile Include="Analysis\TokenFilters\IndexAnalysisTokenFilterContributor.cs" />
     <Compile Include="Analysis\Tokenizers\IndexAnalysisTokenizerContributor.cs" />
     <Compile Include="Contributors\CompositeElasticsearchIndexCreationContributor.cs" />
+    <Compile Include="Contributors\IndexSettings\AddAliasIndexSettingsContributor.cs" />
     <Compile Include="Contributors\IndexSettings\IndexSettingsContributor.cs" />
+    <Compile Include="Contributors\IndexSettings\NumberOfReplicasIndexSettingsContributor.cs" />
+    <Compile Include="Contributors\IndexSettings\NumberOfShardsIndexSettingsContributor.cs" />
     <Compile Include="Contributors\Mapping\FromAttributesIndexMappingContributor.cs" />
     <Compile Include="Contributors\ElasticsearchIndexCreationContributor.cs" />
+    <Compile Include="Contributors\Mapping\IndexMappingContributor.cs" />
     <Compile Include="ElasticsearchIndexCreationStrategy.cs" />
     <Compile Include="Contributors\IElasticsearchIndexCreationContributor.cs" />
     <Compile Include="IElasticsearchIndexCreationStrategy.cs" />

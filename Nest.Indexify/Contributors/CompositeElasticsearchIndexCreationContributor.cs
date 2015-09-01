@@ -11,9 +11,8 @@ namespace Nest.Indexify.Contributors
 	        _contributors.Add(contributor);
 	    }
 
-		protected CompositeElasticsearchIndexCreationContributor(int order = 0)
+		protected CompositeElasticsearchIndexCreationContributor(int order = 0) : base(order)
 		{
-			Order = order;
 		}
 
 		public override void Contribute(CreateIndexDescriptor descriptor)

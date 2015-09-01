@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Nest.Indexify")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Helper library for Elasticsearch index creation using a contributor model")]
 [assembly: AssemblyCompany("Storm ID Ltd")]
 
 #if DEBUG
