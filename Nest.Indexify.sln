@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nest.Indexify", "src\Nest.I
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AE94445A-437E-45EC-9F20-623F11F768E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nest.Indexify.Tests", "Nest.Indexify.Tests\Nest.Indexify.Tests.csproj", "{B0A4310F-4D99-41AE-8F34-947FAB1D28EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nest.Indexify.Tests", "tests\Nest.Indexify.Tests\Nest.Indexify.Tests.csproj", "{B0A4310F-4D99-41AE-8F34-947FAB1D28EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
