@@ -1,12 +1,29 @@
+using System;
 using System.Diagnostics;
 
 namespace Nest.Indexify.Contributors
 {
-    public abstract class ElasticsearchIndexCreationContributor : IElasticsearchIndexCreationContributor
+    public abstract class ElasticsearchIndexContributor : IElasticsearchIndexContributor
     {
-        protected ElasticsearchIndexCreationContributor(int order = 0)
+        protected ElasticsearchIndexContributor(int order = 0)
         {
             Order = order;
+        }
+
+        public int CompareTo(IElasticsearchIndexContributor other)
+        {
+            if (Order == other.Order) return 1; // ensures that duplicates with the same order value are still added to the set
+
+            return Order.CompareTo(other.Order);
+        }
+
+        public int Order { get; }
+    }
+
+    public abstract class ElasticsearchIndexCreationContributor : ElasticsearchIndexContributor, IElasticsearchIndexCreationContributor
+    {
+        protected ElasticsearchIndexCreationContributor(int order = 0) : base(order)
+        {
         }
 
         public int CompareTo(IElasticsearchIndexCreationContributor other)
@@ -16,18 +33,21 @@ namespace Nest.Indexify.Contributors
             return Order.CompareTo(other.Order);
         }
 
-        public int Order { get; private set; }
+        public bool CanContribute(ICreateIndexRequest indexRequest, IElasticClient client)
+        {
+            return CanContributeCore(indexRequest, client);
+        }
 
-        public virtual bool CanContribute(ICreateIndexRequest indexRequest)
+        protected virtual bool CanContributeCore(ICreateIndexRequest indexRequest, IElasticClient client)
         {
             return true;
         }
 
-        public void Contribute(CreateIndexDescriptor descriptor)
+        public void Contribute(CreateIndexDescriptor descriptor, IElasticClient client)
         {
-            if (CanContribute(descriptor))
+            if (CanContribute(descriptor, client))
             {
-                ContributeCore(descriptor);
+                ContributeCore(descriptor, client);
             }
             else
             {
@@ -40,11 +60,11 @@ namespace Nest.Indexify.Contributors
             Trace.TraceWarning("Failed to contribute {0} to index creation", this);
         }
 
-        public abstract void ContributeCore(CreateIndexDescriptor descriptor);
+        public abstract void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client);
 
         public override string ToString()
         {
-            return string.Format("{0}({1})", GetType().Name, Order);
+            return $"{GetType().Name}({Order})";
         }
     }
 }

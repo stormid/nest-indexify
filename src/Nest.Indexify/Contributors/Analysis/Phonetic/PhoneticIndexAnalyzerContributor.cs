@@ -14,8 +14,8 @@ namespace Nest.Indexify.Contributors.Analysis.Phonetic
 			_tokenFilter = tokenFilter;
 		}
 
-	    public override bool CanContribute(ICreateIndexRequest indexRequest)
-	    {
+        protected override bool CanContributeCore(ICreateIndexRequest indexRequest, IElasticClient client)
+        {
 	        return indexRequest.IndexSettings.Analysis.TokenFilters.ContainsKey(_tokenFilter);
 	    }
 

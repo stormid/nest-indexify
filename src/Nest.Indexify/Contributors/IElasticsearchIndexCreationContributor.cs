@@ -2,10 +2,28 @@ using System;
 
 namespace Nest.Indexify.Contributors
 {
-    public interface IElasticsearchIndexCreationContributor : IComparable<IElasticsearchIndexCreationContributor>
+    public interface IElasticsearchIndexContributor : IComparable<IElasticsearchIndexContributor>
     {
-		int Order { get; }
-        bool CanContribute(ICreateIndexRequest indexRequest);
-        void Contribute(CreateIndexDescriptor descriptor);
+        int Order { get; }
+    }
+
+    public interface IElasticsearchIndexCreationContributor : IElasticsearchIndexContributor, IComparable<IElasticsearchIndexCreationContributor>
+    {
+        void Contribute(CreateIndexDescriptor descriptor, IElasticClient client);
+    }
+
+    public interface IElasticsearchIndexCreationSuccessContributor : IElasticsearchIndexContributor
+    {
+        void OnSuccess(IElasticClient client, IIndicesOperationResponse response);
+    }
+
+    public interface IElasticsearchIndexCreationFailureContributor : IElasticsearchIndexContributor
+    {
+        void OnFailure(IElasticClient client, Exception ex);
+    }
+
+    public interface IElasticsearchIndexPreCreationContributor : IElasticsearchIndexContributor
+    {
+        string OnPreCreate(IElasticClient client, string indexName);
     }
 }

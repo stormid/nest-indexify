@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,30 +9,67 @@ namespace Nest.Indexify
     public abstract class ElasticsearchIndexCreationStrategy : IElasticsearchIndexCreationStrategy
     {
         private readonly IElasticClient _client;
-        private readonly ISet<IElasticsearchIndexCreationContributor> _contributors = new SortedSet<IElasticsearchIndexCreationContributor>();
+        private readonly ISet<IElasticsearchIndexContributor> _contributors = new SortedSet<IElasticsearchIndexContributor>();
 
         protected ElasticsearchIndexCreationStrategy(IElasticClient client)
         {
             _client = client;
         }
 
-        public void Create(params IElasticsearchIndexCreationContributor[] additionalContributors)
+        public void Create(params IElasticsearchIndexContributor[] additionalContributors)
         {
             var indexName = _client.Infer.DefaultIndex;
             _contributors.UnionWith(additionalContributors);
 
-            _client.CreateIndex(indexName, i => ContributeCore(i, _contributors));
+            indexName = PreIndexContribution(_contributors.OfType<IElasticsearchIndexPreCreationContributor>(), indexName);
+
+            try
+            {
+                var indexResponse = _client.CreateIndex(indexName, i => ContributeCore(i, _contributors.OfType<IElasticsearchIndexCreationContributor>()));
+
+                OnCompleted(_contributors.OfType<IElasticsearchIndexCreationSuccessContributor>(), indexResponse);
+            }
+            catch (Exception ex)
+            {
+                OnError(_contributors.OfType<IElasticsearchIndexCreationFailureContributor>(), ex);
+            }
         }
 
-        public Task CreateAsync(params IElasticsearchIndexCreationContributor[] additionalContributors)
+        private string PreIndexContribution(IEnumerable<IElasticsearchIndexPreCreationContributor> contributors, string indexName)
+        {
+            foreach (var contrib in contributors)
+            {
+                indexName = contrib.OnPreCreate(_client, indexName);
+            }
+            return indexName;
+        }
+
+        private void OnError(IEnumerable<IElasticsearchIndexContributor> contributors, Exception ex)
+        {
+            foreach (var c in contributors.OfType<IElasticsearchIndexCreationFailureContributor>())
+            {
+                c.OnFailure(_client, ex);
+            }
+        }
+
+        private void OnCompleted(IEnumerable<IElasticsearchIndexCreationSuccessContributor> contributors, IIndicesOperationResponse indexResponse)
+        {
+            foreach (var c in contributors)
+            {
+                c.OnSuccess(_client, indexResponse);
+            }
+        }
+
+
+        public Task CreateAsync(params IElasticsearchIndexContributor[] additionalContributors)
         {
             var indexName = _client.Infer.DefaultIndex;
             _contributors.UnionWith(additionalContributors);
 
-            return _client.CreateIndexAsync(indexName, i => ContributeCore(i, _contributors));
+            return _client.CreateIndexAsync(indexName, i => ContributeCore(i, _contributors.OfType<IElasticsearchIndexCreationContributor>()));
         }
 
-        protected void AddContributor(IElasticsearchIndexCreationContributor contributor)
+        protected void AddContributor(IElasticsearchIndexContributor contributor)
         {
             _contributors.Add(contributor);
         }
@@ -45,7 +83,7 @@ namespace Nest.Indexify
         {
             foreach (var contributor in contributors)
             {
-                contributor.Contribute(descriptor);
+                contributor.Contribute(descriptor, _client);
             }
 
             return descriptor;
