@@ -71,6 +71,11 @@
     <Compile Include="Contributors\Analysis\Tokenizers\PathHierarchyIndexTokenizerContributor.cs" />
     <Compile Include="Contributors\CompositeElasticsearchIndexCreationContributor.cs" />
     <Compile Include="Contributors\Analysis\English\EnglishIndexAnalysisContributor.cs" />
+    <Compile Include="Contributors\ElasticsearchIndexContributor.cs" />
+    <Compile Include="Contributors\IElasticsearchIndexContributor.cs" />
+    <Compile Include="Contributors\IElasticsearchIndexCreationFailureContributor.cs" />
+    <Compile Include="Contributors\IElasticsearchIndexCreationSuccessContributor.cs" />
+    <Compile Include="Contributors\IElasticsearchIndexPreCreationContributor.cs" />
     <Compile Include="Contributors\IndexSettings\AddAliasIndexSettingsContributor.cs" />
     <Compile Include="Contributors\IndexSettings\IndexSettingsContributor.cs" />
     <Compile Include="Contributors\IndexSettings\NumberOfReplicasIndexSettingsContributor.cs" />

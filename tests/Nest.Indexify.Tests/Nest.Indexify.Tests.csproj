@@ -94,6 +94,10 @@
     <Compile Include="ElasticClientContextBase.cs" />
     <Compile Include="Contributors\ElasticsearchIndexCreationContributorSortingSpec.cs" />
     <Compile Include="ElasticsearchIndexCreationStrategySpecs.cs" />
+    <Compile Include="Extensions\ReadEmbeddedResourceExtensions.cs" />
+    <Compile Include="IndexCreationContributorSpecs\ElasticClientQueryObjectTestFixture.cs" />
+    <Compile Include="IndexCreationContributorSpecs\ElasticsearchContributorContext.cs" />
+    <Compile Include="IndexCreationContributorSpecs\ElasticsearchIndexContributorSpecs.cs" />
     <Compile Include="IndexCreationStrategyContext.cs" />
     <Compile Include="Contributors\NumberOfReplicasIndexCreationContributorSpec.cs" />
     <Compile Include="Contributors\NumberOfShardsIndexCreationContributorSpecs.cs" />

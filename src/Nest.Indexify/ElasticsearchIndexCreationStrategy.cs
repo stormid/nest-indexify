@@ -25,13 +25,19 @@ namespace Nest.Indexify
 
             try
             {
-                var indexResponse = _client.CreateIndex(indexName, i => ContributeCore(i, _contributors.OfType<IElasticsearchIndexCreationContributor>()));
+                var indexResponse = _client.CreateIndex(i =>
+                {
+                    i.Index(indexName);
+                    ContributeCore(i, _contributors.OfType<IElasticsearchIndexCreationContributor>());
+                    return i;
+                });
 
                 OnCompleted(_contributors.OfType<IElasticsearchIndexCreationSuccessContributor>(), indexResponse);
             }
             catch (Exception ex)
             {
                 OnError(_contributors.OfType<IElasticsearchIndexCreationFailureContributor>(), ex);
+                throw;
             }
         }
 
@@ -60,13 +66,29 @@ namespace Nest.Indexify
             }
         }
 
-
-        public Task CreateAsync(params IElasticsearchIndexContributor[] additionalContributors)
+        public async Task CreateAsync(params IElasticsearchIndexContributor[] additionalContributors)
         {
             var indexName = _client.Infer.DefaultIndex;
             _contributors.UnionWith(additionalContributors);
 
-            return _client.CreateIndexAsync(indexName, i => ContributeCore(i, _contributors.OfType<IElasticsearchIndexCreationContributor>()));
+            indexName = PreIndexContribution(_contributors.OfType<IElasticsearchIndexPreCreationContributor>(), indexName);
+
+            try
+            {
+                var indexResponse = await _client.CreateIndexAsync(i =>
+                {
+                    i.Index(indexName);
+                    ContributeCore(i, _contributors.OfType<IElasticsearchIndexCreationContributor>());
+                    return i;
+                });
+
+                OnCompleted(_contributors.OfType<IElasticsearchIndexCreationSuccessContributor>(), indexResponse);
+            }
+            catch (Exception ex)
+            {
+                OnError(_contributors.OfType<IElasticsearchIndexCreationFailureContributor>(), ex);
+                throw;
+            }
         }
 
         protected void AddContributor(IElasticsearchIndexContributor contributor)
