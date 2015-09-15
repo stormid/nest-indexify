@@ -13,7 +13,7 @@ namespace Nest.Indexify.Contributors.Mapping
 
         protected IndexMappingContributor(int order = 99)  : base(order) { }
 
-        public sealed override void ContributeCore(CreateIndexDescriptor descriptor)
+        public sealed override void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client)
         {
             descriptor.AddMapping<TType>(MappingCore);
         }

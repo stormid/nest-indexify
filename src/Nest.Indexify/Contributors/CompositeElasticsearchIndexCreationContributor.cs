@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,17 +16,17 @@ namespace Nest.Indexify.Contributors
 		protected CompositeElasticsearchIndexCreationContributor(int order = 0) : base(order)
 		{
 		}
-
-	    public sealed override bool CanContribute(ICreateIndexRequest indexRequest)
-	    {
+        
+        protected sealed override bool CanContributeCore(ICreateIndexRequest indexRequest, IElasticClient client)
+        {
 	        return true;
 	    }
 
-	    public override void ContributeCore(CreateIndexDescriptor descriptor)
+	    public override void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client)
 		{
 			foreach (var contributor in _contributors)
 			{
-				contributor.Contribute(descriptor);
+				contributor.Contribute(descriptor, client);
 			}
 		}
 	}

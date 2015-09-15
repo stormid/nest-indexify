@@ -13,12 +13,12 @@ namespace Nest.Indexify.Tests.Stubs
             _shouldContribute = shouldContribute;
         }
 
-        public override bool CanContribute(ICreateIndexRequest indexRequest)
+        protected override bool CanContributeCore(ICreateIndexRequest indexRequest, IElasticClient client)
         {
             return _shouldContribute;
         }
 
-        public override void ContributeCore(CreateIndexDescriptor descriptor)
+        public override void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client)
         {
             Debug.WriteLine("Contributed {0}", GetType().Name);
             HasContributed = true;

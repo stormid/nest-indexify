@@ -13,7 +13,7 @@ namespace Nest.Indexify.Contributors.Analysis
 			return !existing.ContainsKey(setting.Key);
 		}
 
-		public sealed override void ContributeCore(CreateIndexDescriptor descriptor)
+		public sealed override void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client)
 		{
 			descriptor.Analysis(ContributeCore);
 		}
