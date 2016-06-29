@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
+using Elasticsearch.Net;
 using Nest.Indexify.Contributors;
 
 namespace Nest.Indexify
@@ -16,33 +18,51 @@ namespace Nest.Indexify
             _client = client;
         }
 
-        public void Create(params IElasticsearchIndexContributor[] additionalContributors)
+        private IElasticsearchIndexCreationStrategyResult CreateResultCore(IList<IElasticsearchIndexContributor> contributors, IIndicesOperationResponse response, Exception ex)
+        {
+            return CreateResult(contributors, (ex == null && response.IsValid), response, ex);
+        }
+
+        protected virtual IElasticsearchIndexCreationStrategyResult CreateResult(IList<IElasticsearchIndexContributor> contributors, bool success, IIndicesOperationResponse response, Exception ex)
+        {
+            return new ElasticsearchIndexCreationStrategyResult(contributors, success, response, ex);
+        }
+
+        public IElasticsearchIndexCreationStrategyResult Create(params IElasticsearchIndexContributor[] additionalContributors)
         {
             var contribCollection = new SortedSet<IElasticsearchIndexContributor>(_contributors);
             var indexName = _client.Infer.DefaultIndex;
             contribCollection.UnionWith(additionalContributors);
 
-            indexName = PreIndexContribution(contribCollection.OfType<IElasticsearchIndexPreCreationContributor>(), indexName);
+            indexName = PreIndexContribution(contribCollection.OfType<IElasticsearchIndexPreCreationContributor>().ToList(), indexName);
 
             try
             {
                 var indexResponse = _client.CreateIndex(i =>
                 {
                     i.Index(indexName);
-                    ContributeCore(i, contribCollection.OfType<IElasticsearchIndexCreationContributor>());
+                    ContributeCore(i, contribCollection.OfType<IElasticsearchIndexCreationContributor>().ToList());
                     return i;
                 });
 
-                OnCompleted(contribCollection.OfType<IElasticsearchIndexCreationSuccessContributor>(), indexResponse);
+                if (indexResponse.IsValid)
+                {
+                    OnCompleted(contribCollection.OfType<IElasticsearchIndexCreationSuccessContributor>().ToList(), indexResponse);
+                }
+                else
+                {
+                    OnError(contribCollection.OfType<IElasticsearchIndexCreationFailureContributor>().ToList(), indexResponse);
+                }
+                return CreateResultCore(contribCollection.ToList(), indexResponse, null);
             }
             catch (Exception ex)
             {
-                OnError(contribCollection.OfType<IElasticsearchIndexCreationFailureContributor>(), ex);
-                throw;
+                OnError(contribCollection.OfType<IElasticsearchIndexCreationFailureContributor>().ToList(), ex: ex);
+                return CreateResultCore(contribCollection.ToList(), null, ex);
             }
         }
 
-        private string PreIndexContribution(IEnumerable<IElasticsearchIndexPreCreationContributor> contributors, string indexName)
+        private string PreIndexContribution(IList<IElasticsearchIndexPreCreationContributor> contributors, string indexName)
         {
             foreach (var contrib in contributors)
             {
@@ -51,45 +71,53 @@ namespace Nest.Indexify
             return indexName;
         }
 
-        private void OnError(IEnumerable<IElasticsearchIndexContributor> contributors, Exception ex)
+        private void OnError(IList<IElasticsearchIndexCreationFailureContributor> contributors, IIndicesOperationResponse response = null, Exception ex = null)
         {
-            foreach (var c in contributors.OfType<IElasticsearchIndexCreationFailureContributor>())
+            foreach (var c in contributors)
             {
-                c.OnFailure(_client, ex);
+                c.OnFailure(_client, response, ex);
             }
         }
 
-        private void OnCompleted(IEnumerable<IElasticsearchIndexCreationSuccessContributor> contributors, IIndicesOperationResponse indexResponse)
+        private void OnCompleted(IList<IElasticsearchIndexCreationSuccessContributor> contributors, IIndicesOperationResponse indexResponse)
         {
             foreach (var c in contributors)
             {
                 c.OnSuccess(_client, indexResponse);
             }
         }
-
-        public async Task CreateAsync(params IElasticsearchIndexContributor[] additionalContributors)
+        
+        public async Task<IElasticsearchIndexCreationStrategyResult> CreateAsync(params IElasticsearchIndexContributor[] additionalContributors)
         {
             var contribCollection = new SortedSet<IElasticsearchIndexContributor>(_contributors);
             var indexName = _client.Infer.DefaultIndex;
             contribCollection.UnionWith(additionalContributors);
 
-            indexName = PreIndexContribution(contribCollection.OfType<IElasticsearchIndexPreCreationContributor>(), indexName);
+            indexName = PreIndexContribution(contribCollection.OfType<IElasticsearchIndexPreCreationContributor>().ToList(), indexName);
 
             try
             {
                 var indexResponse = await _client.CreateIndexAsync(i =>
                 {
                     i.Index(indexName);
-                    ContributeCore(i, contribCollection.OfType<IElasticsearchIndexCreationContributor>());
+                    ContributeCore(i, contribCollection.OfType<IElasticsearchIndexCreationContributor>().ToList());
                     return i;
                 });
 
-                OnCompleted(contribCollection.OfType<IElasticsearchIndexCreationSuccessContributor>(), indexResponse);
+                if (indexResponse.IsValid)
+                {
+                    OnCompleted(contribCollection.OfType<IElasticsearchIndexCreationSuccessContributor>().ToList(), indexResponse);
+                }
+                else
+                {
+                    OnError(contribCollection.OfType<IElasticsearchIndexCreationFailureContributor>().ToList(), indexResponse);
+                }
+                return CreateResultCore(contribCollection.ToList(), indexResponse, null);
             }
             catch (Exception ex)
             {
-                OnError(contribCollection.OfType<IElasticsearchIndexCreationFailureContributor>(), ex);
-                throw;
+                OnError(contribCollection.OfType<IElasticsearchIndexCreationFailureContributor>().ToList(), ex: ex);
+                return CreateResultCore(contribCollection.ToList(), null, ex);
             }
         }
 

@@ -14,6 +14,12 @@ namespace Nest.Indexify.Contributors
             return Order.CompareTo(other.Order);
         }
 
+        protected void ContributionComplete()
+        {
+            HasContributed = true;
+        }
+
         public int Order { get; }
+        public bool HasContributed { get; private set; }
     }
 }

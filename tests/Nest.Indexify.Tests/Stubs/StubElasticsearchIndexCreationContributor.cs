@@ -6,7 +6,6 @@ namespace Nest.Indexify.Tests.Stubs
     public class StubElasticsearchIndexCreationContributor : ElasticsearchIndexCreationContributor
     {
         private readonly bool _shouldContribute;
-        public bool HasContributed { get; private set; }
 
         public StubElasticsearchIndexCreationContributor(bool shouldContribute = true, int order = 0) : base(order)
         {
@@ -21,7 +20,6 @@ namespace Nest.Indexify.Tests.Stubs
         public override void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client)
         {
             Debug.WriteLine("Contributed {0}", GetType().Name);
-            HasContributed = true;
         }
     }
 }

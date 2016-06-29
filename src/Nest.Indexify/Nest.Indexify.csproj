@@ -88,7 +88,10 @@
     <Compile Include="Contributors\Mapping\IndexMappingContributor.cs" />
     <Compile Include="ElasticsearchIndexCreationStrategy.cs" />
     <Compile Include="Contributors\IElasticsearchIndexCreationContributor.cs" />
+    <Compile Include="ElasticsearchIndexCreationStrategyResult.cs" />
     <Compile Include="IElasticsearchIndexCreationStrategy.cs" />
+    <Compile Include="IElasticsearchIndexCreationStrategyResult.cs" />
+    <Compile Include="IndexCreationStrategyException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

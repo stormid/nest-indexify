@@ -24,6 +24,7 @@ namespace Nest.Indexify.Contributors
             if (CanContribute(descriptor, client))
             {
                 ContributeCore(descriptor, client);
+                ContributionComplete();
             }
             else
             {

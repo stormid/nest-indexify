@@ -5,7 +5,7 @@ namespace Nest.Indexify
 {
 	public interface IElasticsearchIndexCreationStrategy
     {
-		void Create(params IElasticsearchIndexContributor[] additionalContributors);
-	    Task CreateAsync(params IElasticsearchIndexContributor[] additionalContributors);
+        IElasticsearchIndexCreationStrategyResult Create(params IElasticsearchIndexContributor[] additionalContributors);
+	    Task<IElasticsearchIndexCreationStrategyResult> CreateAsync(params IElasticsearchIndexContributor[] additionalContributors);
     }
 }

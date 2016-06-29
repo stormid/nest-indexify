@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Nest.Indexify.Contributors;
-using Nest.Indexify.Tests.Contributors;
 using Nest.Indexify.Tests.Specification;
 using Nest.Indexify.Tests.Stubs;
 using Xunit;
@@ -17,7 +15,8 @@ namespace Nest.Indexify.Tests
         private IElasticsearchIndexCreationStrategy _strategy;
 
         private IEnumerable<IElasticsearchIndexCreationContributor> _stubContributors;
-        
+        private IElasticsearchIndexCreationStrategyResult _result;
+
         protected override void Context()
         {
             _stubContributors = new[]
@@ -31,13 +30,22 @@ namespace Nest.Indexify.Tests
 
         protected override void Because()
         {
-            _strategy.Create();
+            _result = _strategy.Create();
         }
 
         [Fact]
         public void ShouldCallElasticClientCreateIndex()
         {
             SharedContext.Client.Verify(v => v.CreateIndex(It.IsAny<Func<CreateIndexDescriptor, CreateIndexDescriptor>>()), Times.Once);
+        }
+
+
+        [Fact]
+        public void ShouldReturnResult()
+        {
+            _result.Success.Should().BeTrue();
+            _result.Contributors.Count().Should().Be(3);
+            _result.Contributors.All(x => x.HasContributed).Should().BeTrue();
         }
 
         [Fact]
@@ -55,6 +63,7 @@ namespace Nest.Indexify.Tests
         private IElasticsearchIndexCreationStrategy _strategy;
 
         private IEnumerable<IElasticsearchIndexCreationContributor> _stubContributors;
+        private IElasticsearchIndexCreationStrategyResult _result;
 
         protected override void Context()
         {
@@ -67,15 +76,22 @@ namespace Nest.Indexify.Tests
             _strategy = new StubElasticsearchIndexCreationStrategy(SharedContext.Client.Object, _stubContributors.ToArray());
         }
         
-        protected override void Because()
+        protected async override void Because()
         {
-            _strategy.CreateAsync();
+            _result = await _strategy.CreateAsync();
         }
 
         [Fact]
         public void ShouldCallElasticClientCreateIndex()
         {
             SharedContext.Client.Verify(v => v.CreateIndexAsync(It.IsAny<Func<CreateIndexDescriptor, CreateIndexDescriptor>>()), Times.Once);
+        }
+
+        [Fact]
+        public void ShouldReturnResult()
+        {
+            _result.Success.Should().BeTrue();
+            _result.Contributors.Count().Should().Be(3);
         }
 
         [Fact]

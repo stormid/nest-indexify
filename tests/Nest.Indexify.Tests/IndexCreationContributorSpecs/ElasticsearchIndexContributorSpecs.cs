@@ -35,16 +35,20 @@ namespace Nest.Indexify.Tests.IndexCreationContributorSpecs
         public void CreatingIndex()
         {
             var strategy = new StubElasticsearchIndexCreationStrategy(_fixture.Client);
-            strategy.Create();
+            var result = strategy.Create();
             _fixture.ShouldUseHttpMethod("POST");
+            result.Success.Should().BeTrue();
+            result.Contributors.All(x => x.HasContributed).Should().BeTrue();
         }
 
         [Fact]
         public async void CreatingIndexAsync()
         {
             var strategy = new StubElasticsearchIndexCreationStrategy(_fixture.Client);
-            await strategy.CreateAsync();
+            var result = await strategy.CreateAsync();
             _fixture.ShouldUseHttpMethod("POST");
+            result.Success.Should().BeTrue();
+            result.Contributors.All(x => x.HasContributed).Should().BeTrue();
         }
     }
 
@@ -61,8 +65,11 @@ namespace Nest.Indexify.Tests.IndexCreationContributorSpecs
         public async void CreatingIndexAsync()
         {
             var strategy = new StubElasticsearchIndexCreationStrategy(_fixture.Client);
-            await strategy.CreateAsync();
+            var result = await strategy.CreateAsync();
             _fixture.ShouldUseHttpMethod("POST");
+            result.Success.Should().BeTrue();
+            result.Contributors.All(x => x.HasContributed).Should().BeTrue();
+
         }
     }
 
