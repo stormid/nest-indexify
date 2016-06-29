@@ -141,7 +141,6 @@ Task("Build-NuGet-Package")
                 new NuSpecContent { Source = "Nest.Indexify.pdb", Target = "lib/net45" },
             },
             Dependencies = new [] {
-                new NuSpecDependency { Id = "Nest.Queryify", Version = "0.6.1" },
                 new NuSpecDependency { Id = "Nest", Version = "[1.6,2.0)" },
             }
         };
