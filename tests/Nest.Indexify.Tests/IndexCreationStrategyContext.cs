@@ -9,6 +9,7 @@ namespace Nest.Indexify.Tests
     public abstract class IndexCreationStrategyContext : ContextSpecification<ElasticClientContext>
     {
         private IElasticsearchIndexCreationStrategy _strategy;
+        protected IElasticsearchIndexCreationStrategyResult _result;
 
         protected override void Context()
         {
@@ -23,7 +24,7 @@ namespace Nest.Indexify.Tests
 
         protected override void Because()
         {
-            _strategy.Create();
+            _result = _strategy.Create();
         }
     }
 }

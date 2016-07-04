@@ -9,12 +9,12 @@ namespace Nest.Indexify.Contributors.IndexSettings
             _aliasName = aliasName;
         }
 
-        public override void ContributeCore(CreateIndexDescriptor descriptor)
+        public override void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client)
         {
             descriptor.AddAlias(_aliasName, AddAliasCore);
         }
 
-        public override bool CanContribute(ICreateIndexRequest indexRequest)
+        protected override bool CanContributeCore(ICreateIndexRequest indexRequest, IElasticClient client)
         {
             return indexRequest.IndexSettings.Aliases == null || !indexRequest.IndexSettings.Aliases.ContainsKey(_aliasName);
         }

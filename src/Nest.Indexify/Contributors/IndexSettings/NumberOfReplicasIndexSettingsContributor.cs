@@ -1,3 +1,5 @@
+using System;
+
 namespace Nest.Indexify.Contributors.IndexSettings
 {
     public class NumberOfReplicasIndexSettingsContributor : ElasticsearchIndexCreationContributor
@@ -9,12 +11,12 @@ namespace Nest.Indexify.Contributors.IndexSettings
             _replicas = replicas;
         }
 
-        public override bool CanContribute(ICreateIndexRequest indexRequest)
+        protected override bool CanContributeCore(ICreateIndexRequest indexRequest, IElasticClient client)
         {
             return true;
         }
 
-        public override void ContributeCore(CreateIndexDescriptor descriptor)
+        public override void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client)
         {
             if (_replicas.HasValue && _replicas >= 0)
             {
