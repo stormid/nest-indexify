@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Nest.Indexify.Contributors;
 using Nest.Indexify.Contributors.Analysis.Autocomplete;
-using Nest.Indexify.Contributors.Analysis.English;
+using Nest.Indexify.Contributors.Analysis.Languages;
 using Xunit;
 
 namespace Nest.Indexify.Tests.Contributors
