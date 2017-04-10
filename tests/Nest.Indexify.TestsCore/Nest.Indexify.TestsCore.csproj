@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net45;net46;netstandard1.6</TargetFrameworks>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.0</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <RootNamespace>Nest.Indexify.Tests</RootNamespace>    
+    <AssemblyName>Nest.Indexify.Tests</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Contributors\Analysis\**" />
+    <EmbeddedResource Remove="Contributors\Analysis\**" />
+    <None Remove="Contributors\Analysis\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Contributors\NumberOfReplicasIndexCreationContributorSpec.cs" />
+    <Compile Remove="Contributors\NumberOfShardsIndexCreationContributorSpecs.cs" />
+    <Compile Remove="Contributors\WhenIndexCreationContributionCanContribute.cs" />
+    <Compile Remove="Contributors\WhenIndexCreationContributionCanNotContribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="4.19.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+    <PackageReference Include="Moq" Version="4.7.8" />
+    <PackageReference Include="NEST" Version="5.3.0" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' or '$(TargetFramework)' == 'net46' ">
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Nest-IndexifyCore\Nest.Indexify.csproj" />
+  </ItemGroup>
+
+</Project>
