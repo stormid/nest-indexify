@@ -43,6 +43,7 @@ namespace Nest.Indexify
             {
                 var indexResponse = _client.CreateIndex(indexName,  i =>
                 {
+                    ContributeIndexSettings(i, contribCollection);
                     ContributeCore(i, contribCollection.OfType<IElasticsearchIndexCreationContributor>().ToList());
                     return i;
                 });
@@ -62,6 +63,19 @@ namespace Nest.Indexify
                 OnError(contribCollection.OfType<IElasticsearchIndexCreationFailureContributor>().ToList(), ex: ex);
                 return CreateResultCore(contribCollection.ToList(), null, ex);
             }
+        }
+
+        private CreateIndexDescriptor ContributeIndexSettings(CreateIndexDescriptor i, SortedSet<IElasticsearchIndexContributor> contribCollection)
+        {
+            i = i.Settings(settings =>
+            {
+                foreach (var setting in contribCollection.OfType<IElasticsearchIndexSettingsContributor>().ToList())
+                {
+                    setting.Contribute(settings, _client);
+                }
+                return settings;
+            });
+            return i;
         }
 
         private string PreIndexContribution(IList<IElasticsearchIndexPreCreationContributor> contributors, string indexName)
