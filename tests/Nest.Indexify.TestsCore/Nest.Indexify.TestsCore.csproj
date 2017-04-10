@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Contributors\NumberOfReplicasIndexCreationContributorSpec.cs" />
     <Compile Remove="Contributors\NumberOfShardsIndexCreationContributorSpecs.cs" />
     <Compile Remove="Contributors\WhenIndexCreationContributionCanContribute.cs" />
     <Compile Remove="Contributors\WhenIndexCreationContributionCanNotContribute.cs" />

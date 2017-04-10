@@ -9,7 +9,7 @@ namespace Nest.Indexify.Tests
 
         protected IndexCreationStrategyContext(ElasticClientQueryObjectTestFixture fixture)
         {
-            this.Fixture = fixture;
+            Fixture = fixture;
         }
     }
 }
