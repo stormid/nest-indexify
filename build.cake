@@ -1,4 +1,3 @@
-#tool "xunit.runner.console"
 #tool "GitVersion.CommandLine"
 
 //////////////////////////////////////////////////////////////////////
@@ -8,18 +7,13 @@
 var target                  = Argument("target", "Default");
 var configuration           = Argument("configuration", "Release");
 var solutionPath            = MakeAbsolute(File(Argument("solutionPath", "./Nest.Indexify.sln")));
-var nugetProjects           = Argument("nugetProjects", "Nest.Indexify");
-
+var framework               = Argument("framework", "netcoreapp1.1");
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
-var testAssemblies          = "./tests/**/bin/" +configuration +"/*.Tests.dll";
-
 var artifacts               = MakeAbsolute(Directory(Argument("artifactPath", "./artifacts")));
-var buildOutput             = MakeAbsolute(Directory(artifacts +"/build/"));
-var testResultsPath         = MakeAbsolute(Directory(artifacts + "./test-results"));
 var versionAssemblyInfo     = MakeAbsolute(File(Argument("versionAssemblyInfo", "VersionAssemblyInfo.cs")));
 
 IEnumerable<FilePath> nugetProjectPaths     = null;
@@ -34,36 +28,23 @@ Setup(ctx => {
     if(!FileExists(solutionPath)) throw new Exception(string.Format("Solution file not found - {0}", solutionPath.ToString()));
     solution = ParseSolution(solutionPath.ToString());
 
-    var projects = solution.Projects.Where(x => nugetProjects.Contains(x.Name));
-    if(projects == null || !projects.Any()) throw new Exception(string.Format("Unable to find projects '{0}' in solution '{1}'", nugetProjects, solutionPath.GetFilenameWithoutExtension()));
-    nugetProjectPaths = projects.Select(p => p.Path);
-    
-    // if(!FileExists(nugetProjectPath)) throw new Exception("project path not found");
     Information("[Setup] Using Solution '{0}'", solutionPath.ToString());
-});
 
-Task("Clean")
-    .Does(() =>
-{
-    CleanDirectories(artifacts.ToString());
-    CreateDirectory(artifacts);
-    CreateDirectory(buildOutput);
+    if(DirectoryExists(artifacts)) 
+    {
+        DeleteDirectory(artifacts, true);
+    }
+    
+    EnsureDirectoryExists(artifacts);
     
     var binDirs = GetDirectories(solutionPath.GetDirectory() +@"\src\**\bin");
     var objDirs = GetDirectories(solutionPath.GetDirectory() +@"\src\**\obj");
-    CleanDirectories(binDirs);
-    CleanDirectories(objDirs);
-});
-
-Task("Restore-NuGet-Packages")
-    .IsDependentOn("Clean")
-    .Does(() =>
-{
-    NuGetRestore(solutionPath, new NuGetRestoreSettings());
+    DeleteDirectories(binDirs, true);
+    DeleteDirectories(objDirs, true);
 });
 
 Task("Update-Version-Info")
-    .IsDependentOn("CreateVersionAssemblyInfo")
+    .IsDependentOn("Create-Version-Info")
     .Does(() => 
 {
         versionInfo = GitVersion(new GitVersionSettings {
@@ -78,7 +59,7 @@ Task("Update-Version-Info")
     }
 });
 
-Task("CreateVersionAssemblyInfo")
+Task("Create-Version-Info")
     .WithCriteria(() => !FileExists(versionAssemblyInfo))
     .Does(() =>
 {
@@ -90,84 +71,104 @@ Task("CreateVersionAssemblyInfo")
     });
 });
 
-Task("Build")
-    .IsDependentOn("Restore-NuGet-Packages")
+Task("DotNet-MsBuild-Clean")
+    .Does(() => {
+
+        MSBuild(solutionPath, c => c
+            .SetConfiguration(configuration)
+            .SetVerbosity(Verbosity.Minimal)
+            .UseToolVersion(MSBuildToolVersion.VS2017)
+            .WithTarget("Clean")
+        );
+});
+
+Task("DotNet-MsBuild-Restore")
+    .Does(() => {
+
+        MSBuild(solutionPath, c => c
+            .SetConfiguration(configuration)
+            .SetVerbosity(Verbosity.Minimal)
+            .UseToolVersion(MSBuildToolVersion.VS2017)
+            .WithTarget("Clean;Restore")
+        );
+});
+
+Task("DotNet-MsBuild")
     .IsDependentOn("Update-Version-Info")
-    .Does(() =>
-{
-    MSBuild(solutionPath, settings => settings
-        .WithProperty("TreatWarningsAsErrors","true")
-        .WithProperty("UseSharedCompilation", "false")
-        .WithProperty("AutoParameterizationWebConfigConnectionStrings", "false")
-        .SetVerbosity(Verbosity.Quiet)
-        .SetConfiguration(configuration)
-        .WithTarget("Rebuild")
-    );
+    .IsDependentOn("Restore")
+    .Does(() => {
+
+        MSBuild(solutionPath, c => c
+            .SetConfiguration(configuration)
+            .SetVerbosity(Verbosity.Minimal)
+            .UseToolVersion(MSBuildToolVersion.VS2017)
+            .WithProperty("TreatWarningsAsErrors", "true")
+            .WithTarget("Build")
+        );
+
 });
 
-Task("Copy-Files")
+Task("DotNet-MsBuild-Pack")
     .IsDependentOn("Build")
-    .Does(() => 
-{
+    .Does(() => {
+
+   var projectFiles = GetFiles("src/**/*.csproj");
+
+    foreach(var projectFile in projectFiles) {
+        MSBuild(projectFile, c => c
+            .SetConfiguration(configuration)
+            .SetVerbosity(Verbosity.Normal)
+            .UseToolVersion(MSBuildToolVersion.VS2017)
+            .WithProperty("PackageVersion", versionInfo.NuGetVersionV2)
+            .WithProperty("NoBuild", "true")
+            .WithTarget("Pack"));
+    }
+});
+
+Task("DotNet-MsBuild-Publish")
+    .IsDependentOn("Build")
+    .Does(() => {
+
+    var buildOutput = artifacts +"/build";
     EnsureDirectoryExists(buildOutput);
-    CopyFile("./src/Nest.Indexify/bin/" +configuration +"/Nest.Indexify.dll", buildOutput +"/Nest.Indexify.dll");
-    CopyFile("./src/Nest.Indexify/bin/" +configuration +"/Nest.Indexify.pdb", buildOutput +"/Nest.Indexify.pdb");
-});
-
-
-Task("Build-NuGet-Package")
-    .IsDependentOn("Build")
-    .IsDependentOn("Copy-Files")
-    .Does(() => 
-{
-        var settings = new NuGetPackSettings {
-            BasePath = buildOutput,
-            Id = "Nest.Indexify",
-            Authors = new [] { "Phil Oyston" },
-            Owners = new [] {"Phil Oyston", "Storm ID" },
-            Description = "Helper library for Elasticsearch index creation using a contributor model",
-            LicenseUrl = new Uri("https://raw.githubusercontent.com/stormid/nest-Indexify/master/LICENSE"),
-            ProjectUrl = new Uri("https://github.com/stormid/nest-Indexify"),
-            IconUrl = new Uri("http://stormid.com/_/images/icons/apple-touch-icon.png"),
-            RequireLicenseAcceptance = false,
-            Properties = new Dictionary<string, string> { { "Configuration", configuration }},
-            Symbols = false,
-            NoPackageAnalysis = true,
-            Version = versionInfo.NuGetVersionV2,
-            OutputDirectory = artifacts,
-            Tags = new[] { "Elasticsearch", "Nest", "Storm" },
-            Files = new[] {
-                new NuSpecContent { Source = "Nest.Indexify.dll", Target = "lib/net45" },
-                new NuSpecContent { Source = "Nest.Indexify.pdb", Target = "lib/net45" },
-            },
-            Dependencies = new [] {
-                new NuSpecDependency { Id = "Nest", Version = "[1.6,2.0)" },
-            }
-        };
-        NuGetPack("./src/Nest.Indexify/Nest.Indexify.nuspec", settings);                     
-});
-
-Task("Package")
-    .IsDependentOn("Build")
-    .IsDependentOn("Build-NuGet-Package")
-    .Does(() => { });
-
-Task("Run-Unit-Tests")
-    .IsDependentOn("Build")
-    .Does(() =>
-{
-    CreateDirectory(testResultsPath);
-
-    var settings = new XUnit2Settings {
-        XmlReportV1 = true,
-        NoAppDomain = true,
-        OutputDirectory = testResultsPath,
+    var settings = new DotNetCorePublishSettings
+    {
+        Framework = "netcoreapp1.1",
+        Configuration = configuration,
+        OutputDirectory = buildOutput
     };
-    
-    XUnit2(testAssemblies, settings);
+
+    DotNetCorePublish(solutionPath.ToString(), settings);
+    Zip(buildOutput, artifacts + "/Publish.zip");
+
 });
 
-Task("Update-AppVeyor-Build-Number")
+Task("DotNet-MsBuild-CopyToArtifacts")
+    .IsDependentOn("DotNet-MsBuild-Pack")
+    .Does(() => {
+
+        EnsureDirectoryExists(artifacts);
+        CopyFiles("src/**/bin/" +configuration +"/*.nupkg", artifacts);
+});
+
+Task("DotNet-Test")
+    .IsDependentOn("Build")
+    .Does(() => {
+
+    var settings = new DotNetCoreTestSettings
+    {
+        Configuration = configuration,
+        NoBuild = true
+    };
+
+    var projectFiles = GetFiles("tests/**/*.csproj");
+
+    foreach(var projectFile in projectFiles) {
+        DotNetCoreTest(projectFile.ToString(), settings);
+    }
+});
+
+Task("AppVeyor-Update-Build-Number")
     .IsDependentOn("Update-Version-Info")
     .WithCriteria(() => AppVeyor.IsRunningOnAppVeyor)
     .Does(() =>
@@ -175,17 +176,56 @@ Task("Update-AppVeyor-Build-Number")
     AppVeyor.UpdateBuildVersion(versionInfo.FullSemVer +"|" +AppVeyor.Environment.Build.Number);
 });
 
+Task("Appveyor-Upload-Artifacts")
+    .IsDependentOn("Package")
+    .WithCriteria(() => AppVeyor.IsRunningOnAppVeyor)
+    .Does(() =>
+{
+    foreach(var nupkg in GetFiles(artifacts +"/*.nupkg")) {
+        AppVeyor.UploadArtifact(nupkg);
+    }
+});
+
+Task("Appveyor")
+    .WithCriteria(() => AppVeyor.IsRunningOnAppVeyor)
+    .IsDependentOn("AppVeyor-Update-Build-Number")
+    .IsDependentOn("AppVeyor-Upload-Artifacts");
+
+// ************************** //
+
+Task("Clean")
+    .IsDependentOn("DotNet-MsBuild-Clean");
+
+Task("Restore")
+    .IsDependentOn("DotNet-MsBuild-Restore");
+
+Task("Build")
+    .IsDependentOn("Clean")
+    .IsDependentOn("Restore")
+    .IsDependentOn("DotNet-MsBuild");
+
+Task("Test")
+    .IsDependentOn("Build")
+    .IsDependentOn("DotNet-Test");
+
+Task("Package")
+    .IsDependentOn("Build")
+    .IsDependentOn("DotNet-MsBuild-CopyToArtifacts")
+    .IsDependentOn("DotNet-MsBuild-Pack");
+
+Task("CI")
+    .IsDependentOn("AppVeyor")
+    .IsDependentOn("Default");
+
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Update-Version-Info")
-    .IsDependentOn("Update-AppVeyor-Build-Number")
+    .IsDependentOn("Restore")
     .IsDependentOn("Build")
-    .IsDependentOn("Run-Unit-Tests")
-    .IsDependentOn("Package")
-    ;
+    .IsDependentOn("Test")
+    .IsDependentOn("Package");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION

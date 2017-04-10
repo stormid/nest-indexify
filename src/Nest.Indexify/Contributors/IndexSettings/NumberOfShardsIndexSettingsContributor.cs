@@ -1,6 +1,6 @@
 namespace Nest.Indexify.Contributors.IndexSettings
 {
-    public class NumberOfShardsIndexSettingsContributor : ElasticsearchIndexCreationContributor
+    public class NumberOfShardsIndexSettingsContributor : ElasticsearchIndexSettingsContributor
     {
         private readonly int? _shards;
 
@@ -9,7 +9,7 @@ namespace Nest.Indexify.Contributors.IndexSettings
             _shards = shards;
         }
 
-        public override void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client)
+        public override void ContributeCore(IndexSettingsDescriptor descriptor, IElasticClient client)
         {
             if (_shards.HasValue && _shards.Value > 0)
             {

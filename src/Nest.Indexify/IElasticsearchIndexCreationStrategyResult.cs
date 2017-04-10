@@ -8,7 +8,7 @@ namespace Nest.Indexify
     {
         IEnumerable<IElasticsearchIndexContributor> Contributors { get; }
         bool Success { get; }
-        IIndicesOperationResponse IndexResponse { get; }
+        ICreateIndexResponse IndexResponse { get; }
         Exception Exception { get; }
     }
 }

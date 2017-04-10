@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Nest.Indexify.Contributors.Mapping
 {
@@ -8,28 +9,28 @@ namespace Nest.Indexify.Contributors.Mapping
         private static readonly IDictionary<string, string> CoreMetadata = new Dictionary<string, string>()
         {
             { "_clrType", typeof(TType).AssemblyQualifiedName },
-            {"_libVer", typeof (IElasticsearchIndexCreationContributor).Assembly.GetName().Version.ToString() }
+            {"_libVer", typeof (IElasticsearchIndexCreationContributor).GetTypeInfo().Assembly.GetName().Version.ToString() }
         };
 
         protected IndexMappingContributor(int order = 99)  : base(order) { }
 
         public sealed override void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client)
         {
-            descriptor.AddMapping<TType>(MappingCore);
+            descriptor.Mappings(m => m.Map<TType>(MappingCore));
         }
 
-        protected virtual PutMappingDescriptor<TType> Mapping(PutMappingDescriptor<TType> descriptor)
+        protected virtual TypeMappingDescriptor<TType> Mapping(TypeMappingDescriptor<TType> descriptor)
         {
             return descriptor;
         }
 
-        protected PutMappingDescriptor<TType> MappingCore(PutMappingDescriptor<TType> descriptor)
+        protected TypeMappingDescriptor<TType> MappingCore(TypeMappingDescriptor<TType> descriptor)
         {
             ModifyMetadataCore(descriptor);
             return Mapping(descriptor);
         }
 
-        protected void ModifyMetadataCore(PutMappingDescriptor<TType> descriptor)
+        protected void ModifyMetadataCore(TypeMappingDescriptor<TType> descriptor)
         {
             var additionalMetadata = ModifyMetadata();
             descriptor.Meta(m =>

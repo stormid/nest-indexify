@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Threading.Tasks;
-using Elasticsearch.Net;
 using Nest.Indexify.Contributors;
 
 namespace Nest.Indexify
@@ -18,12 +16,17 @@ namespace Nest.Indexify
             _client = client;
         }
 
-        private IElasticsearchIndexCreationStrategyResult CreateResultCore(IList<IElasticsearchIndexContributor> contributors, IIndicesOperationResponse response, Exception ex)
+        private IElasticsearchIndexCreationStrategyResult CreateResultCore(IList<IElasticsearchIndexContributor> contributors, ICreateIndexResponse response, Exception ex)
         {
             return CreateResult(contributors, (ex == null && response.IsValid), response, ex);
         }
 
-        protected virtual IElasticsearchIndexCreationStrategyResult CreateResult(IList<IElasticsearchIndexContributor> contributors, bool success, IIndicesOperationResponse response, Exception ex)
+        private string GetDefaultIndex()
+        {
+            return _client.ConnectionSettings.DefaultIndex;
+        }
+
+        protected virtual IElasticsearchIndexCreationStrategyResult CreateResult(IList<IElasticsearchIndexContributor> contributors, bool success, ICreateIndexResponse response, Exception ex)
         {
             return new ElasticsearchIndexCreationStrategyResult(contributors, success, response, ex);
         }
@@ -31,16 +34,16 @@ namespace Nest.Indexify
         public IElasticsearchIndexCreationStrategyResult Create(params IElasticsearchIndexContributor[] additionalContributors)
         {
             var contribCollection = new SortedSet<IElasticsearchIndexContributor>(_contributors);
-            var indexName = _client.Infer.DefaultIndex;
+            var indexName = GetDefaultIndex();
             contribCollection.UnionWith(additionalContributors);
 
             indexName = PreIndexContribution(contribCollection.OfType<IElasticsearchIndexPreCreationContributor>().ToList(), indexName);
 
             try
             {
-                var indexResponse = _client.CreateIndex(i =>
+                var indexResponse = _client.CreateIndex(indexName,  i =>
                 {
-                    i.Index(indexName);
+                    ContributeIndexSettings(i, contribCollection);
                     ContributeCore(i, contribCollection.OfType<IElasticsearchIndexCreationContributor>().ToList());
                     return i;
                 });
@@ -62,6 +65,28 @@ namespace Nest.Indexify
             }
         }
 
+        private CreateIndexDescriptor ContributeIndexSettings(CreateIndexDescriptor i, SortedSet<IElasticsearchIndexContributor> contribCollection)
+        {
+            // TODO : re-evaluate all of this ugly mess
+            i = i.Settings(settings =>
+            {
+                foreach (var setting in contribCollection.OfType<IElasticsearchIndexSettingsContributor>().ToList())
+                {
+                    setting.Contribute(settings, _client);
+                }
+                foreach (var setting in contribCollection.OfType<IElasticsearchIndexAnalysisContributor>().ToList())
+                {
+                    settings.Analysis(a =>
+                    {
+                        setting.Contribute(a, _client);
+                        return a;
+                    });
+                }
+                return settings;
+            });
+            return i;
+        }
+
         private string PreIndexContribution(IList<IElasticsearchIndexPreCreationContributor> contributors, string indexName)
         {
             foreach (var contrib in contributors)
@@ -71,7 +96,7 @@ namespace Nest.Indexify
             return indexName;
         }
 
-        private void OnError(IList<IElasticsearchIndexCreationFailureContributor> contributors, IIndicesOperationResponse response = null, Exception ex = null)
+        private void OnError(IList<IElasticsearchIndexCreationFailureContributor> contributors, ICreateIndexResponse response = null, Exception ex = null)
         {
             foreach (var c in contributors)
             {
@@ -79,7 +104,7 @@ namespace Nest.Indexify
             }
         }
 
-        private void OnCompleted(IList<IElasticsearchIndexCreationSuccessContributor> contributors, IIndicesOperationResponse indexResponse)
+        private void OnCompleted(IList<IElasticsearchIndexCreationSuccessContributor> contributors, ICreateIndexResponse indexResponse)
         {
             foreach (var c in contributors)
             {
@@ -90,16 +115,15 @@ namespace Nest.Indexify
         public async Task<IElasticsearchIndexCreationStrategyResult> CreateAsync(params IElasticsearchIndexContributor[] additionalContributors)
         {
             var contribCollection = new SortedSet<IElasticsearchIndexContributor>(_contributors);
-            var indexName = _client.Infer.DefaultIndex;
+            var indexName = GetDefaultIndex();
             contribCollection.UnionWith(additionalContributors);
 
             indexName = PreIndexContribution(contribCollection.OfType<IElasticsearchIndexPreCreationContributor>().ToList(), indexName);
 
             try
             {
-                var indexResponse = await _client.CreateIndexAsync(i =>
+                var indexResponse = await _client.CreateIndexAsync(indexName, i =>
                 {
-                    i.Index(indexName);
                     ContributeCore(i, contribCollection.OfType<IElasticsearchIndexCreationContributor>().ToList());
                     return i;
                 });

@@ -1,6 +1,6 @@
 ﻿namespace Nest.Indexify.Contributors.IndexSettings
 {
-    public class IndexSettingsContributor : CompositeElasticsearchIndexCreationContributor
+    public class IndexSettingsContributor : CompositeElasticsearchIndexSettingsContributor
     {
         public IndexSettingsContributor(int? numberOfShards = null, int? numberOfReplicas = null)
         {

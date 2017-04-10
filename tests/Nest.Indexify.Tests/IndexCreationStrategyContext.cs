@@ -1,30 +1,15 @@
-using System.Collections.Generic;
-using System.Linq;
-using Nest.Indexify.Contributors;
-using Nest.Indexify.Tests.Specification;
-using Nest.Indexify.Tests.Stubs;
+using Nest.Indexify.Tests.IndexCreationContributorSpecs;
+using Xunit;
 
 namespace Nest.Indexify.Tests
 {
-    public abstract class IndexCreationStrategyContext : ContextSpecification<ElasticClientContext>
+    public abstract class IndexCreationStrategyContext : IClassFixture<ElasticClientQueryObjectTestFixture>
     {
-        private IElasticsearchIndexCreationStrategy _strategy;
-        protected IElasticsearchIndexCreationStrategyResult _result;
+        protected readonly ElasticClientQueryObjectTestFixture Fixture;
 
-        protected override void Context()
+        protected IndexCreationStrategyContext(ElasticClientQueryObjectTestFixture fixture)
         {
-            _strategy = new StubElasticsearchIndexCreationStrategy(SharedContext.Client.Object, Contributors().ToArray());
-        }
-
-        protected abstract IEnumerable<IElasticsearchIndexCreationContributor> Contributors();
-
-        protected IndexCreationStrategyContext() : base(new ElasticClientContext())
-        {
-        }
-
-        protected override void Because()
-        {
-            _result = _strategy.Create();
+            Fixture = fixture;
         }
     }
 }

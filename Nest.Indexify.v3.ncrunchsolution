@@ -1,10 +1,6 @@
 ﻿<SolutionConfiguration>
   <Settings>
     <AllowParallelTestExecution>True</AllowParallelTestExecution>
-    <MetricsExclusionList>
-      <Value>Contributors\IElasticsearchIndexCreationContributor.cs:src\Nest.Indexify.csproj</Value>
-      <Value>Nest.Indexify.Tests\Nest.Indexify.Tests.csproj</Value>
-    </MetricsExclusionList>
     <SolutionConfigured>True</SolutionConfigured>
   </Settings>
 </SolutionConfiguration>

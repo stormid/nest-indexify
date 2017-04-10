@@ -11,21 +11,21 @@ namespace Nest.Indexify.Contributors.IndexSettings
 
         public override void ContributeCore(CreateIndexDescriptor descriptor, IElasticClient client)
         {
-            descriptor.AddAlias(_aliasName, AddAliasCore);
+            descriptor.Aliases(a => a.Alias(_aliasName, AddAliasCore));
         }
 
         protected override bool CanContributeCore(ICreateIndexRequest indexRequest, IElasticClient client)
         {
-            return indexRequest.IndexSettings.Aliases == null || !indexRequest.IndexSettings.Aliases.ContainsKey(_aliasName);
+            return indexRequest.Aliases == null || !indexRequest.Aliases.ContainsKey(_aliasName);
         }
 
-        private CreateAliasDescriptor AddAliasCore(CreateAliasDescriptor descriptor)
+        private AliasDescriptor AddAliasCore(AliasDescriptor descriptor)
         {
             AddAlias(descriptor);
             return descriptor;
         }
 
-        protected virtual void AddAlias(CreateAliasDescriptor descriptor)
+        protected virtual void AddAlias(AliasDescriptor descriptor)
         {
         }
     }

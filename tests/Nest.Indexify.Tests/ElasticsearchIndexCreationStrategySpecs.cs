@@ -1,106 +1,72 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Elasticsearch.Net;
 using FluentAssertions;
-using Moq;
 using Nest.Indexify.Contributors;
-using Nest.Indexify.Tests.Specification;
+using Nest.Indexify.Tests.IndexCreationContributorSpecs;
 using Nest.Indexify.Tests.Stubs;
 using Xunit;
 
 namespace Nest.Indexify.Tests
 {
-    //public class ElasticsearchIndexCreationStrategySpecs : ContextSpecification<ElasticClientContext>
-    //{
-    //    private IElasticsearchIndexCreationStrategy _strategy;
+    public class ElasticsearchIndexCreationStrategySpecs : IClassFixture<ElasticClientQueryObjectTestFixture>
+    {
+        private readonly ElasticClientQueryObjectTestFixture fixture;
 
-    //    private IEnumerable<IElasticsearchIndexCreationContributor> _stubContributors;
-    //    private IElasticsearchIndexCreationStrategyResult _result;
+        public ElasticsearchIndexCreationStrategySpecs(ElasticClientQueryObjectTestFixture fixture)
+        {
+            this.fixture = fixture;
+        }
 
-    //    protected override void Context()
-    //    {
-    //        _stubContributors = new[]
-    //        {
-    //            new StubElasticsearchIndexCreationContributor(true, 3),
-    //            new StubElasticsearchIndexCreationContributor(true, 2),
-    //            new StubElasticsearchIndexCreationContributor(true, 1)
-    //        };
-    //        _strategy = new StubElasticsearchIndexCreationStrategy(SharedContext.Client.Object, _stubContributors.ToArray());
-    //    }
+        [Fact]
+        public void ShouldCallElasticClientCreateIndex()
+        {
+            IElasticsearchIndexContributor[] stubContributors = new List<IElasticsearchIndexCreationContributor>
+            {
+                new StubElasticsearchIndexCreationContributor(true, 3),
+                new StubElasticsearchIndexCreationContributor(true, 2),
+                new StubElasticsearchIndexCreationContributor(true, 1)
+            }.ToArray();
+            var strategy = new StubElasticsearchIndexCreationStrategy(fixture.Client, stubContributors);
 
-    //    protected override void Because()
-    //    {
-    //        _result = _strategy.Create();
-    //    }
+            var result = strategy.Create();
+            result.IndexResponse.ApiCall.Success.Should().BeTrue();
+            result.IndexResponse.ApiCall.HttpStatusCode.Should().Be(200);
+            result.IndexResponse.ApiCall.HttpMethod.Should().Be(HttpMethod.PUT);
+            result.Contributors.Count().Should().Be(3);
+        }
 
-    //    [Fact]
-    //    public void ShouldCallElasticClientCreateIndex()
-    //    {
-    //        SharedContext.Client.Verify(v => v.CreateIndex(It.IsAny<Func<CreateIndexDescriptor, CreateIndexDescriptor>>()), Times.Once);
-    //    }
+        [Fact]
+        public void ShouldHaveCalledAllContributors()
+        {
+            IElasticsearchIndexContributor[] stubContributors = new List<IElasticsearchIndexCreationContributor>
+            {
+                new StubElasticsearchIndexCreationContributor(true, 3),
+                new StubElasticsearchIndexCreationContributor(true, 2),
+                new StubElasticsearchIndexCreationContributor(true, 1)
+            }.ToArray();
+            var strategy = new StubElasticsearchIndexCreationStrategy(fixture.Client, stubContributors);
 
+            var result = strategy.Create();
+            stubContributors
+                .OfType<StubElasticsearchIndexCreationContributor>()
+                .All(x => x.HasContributed)
+                .Should().BeTrue();
+        }
 
-    //    [Fact]
-    //    public void ShouldReturnResult()
-    //    {
-    //        _result.Success.Should().BeTrue();
-    //        _result.Contributors.Count().Should().Be(3);
-    //        _result.Contributors.All(x => x.HasContributed).Should().BeTrue();
-    //    }
+        [Fact]
+        public void ShouldReportContributions()
+        {
+            IElasticsearchIndexContributor[] stubContributors = new List<IElasticsearchIndexCreationContributor>
+            {
+                new StubElasticsearchIndexCreationContributor(true, 3),
+                new StubElasticsearchIndexCreationContributor(false, 2),
+                new StubElasticsearchIndexCreationContributor(true, 1)
+            }.ToArray();
+            var strategy = new StubElasticsearchIndexCreationStrategy(fixture.Client, stubContributors);
 
-    //    [Fact]
-    //    public void ShouldHaveCalledAllContributors()
-    //    {
-    //        _stubContributors.OfType<StubElasticsearchIndexCreationContributor>()
-    //            .All(x => x.HasContributed)
-    //            .Should()
-    //            .BeTrue();
-    //    }
-    //}
-
-    //public class ElasticsearchIndexCreationStrategyAsyncSpecs : ContextSpecification<ElasticClientContext>
-    //{
-    //    private IElasticsearchIndexCreationStrategy _strategy;
-
-    //    private IEnumerable<IElasticsearchIndexCreationContributor> _stubContributors;
-    //    private IElasticsearchIndexCreationStrategyResult _result;
-
-    //    protected override void Context()
-    //    {
-    //        _stubContributors = new[]
-    //        {
-    //            new StubElasticsearchIndexCreationContributor(true, 3),
-    //            new StubElasticsearchIndexCreationContributor(true, 2),
-    //            new StubElasticsearchIndexCreationContributor(true, 1)
-    //        };
-    //        _strategy = new StubElasticsearchIndexCreationStrategy(SharedContext.Client.Object, _stubContributors.ToArray());
-    //    }
-        
-    //    protected async override void Because()
-    //    {
-    //        _result = await _strategy.CreateAsync();
-    //    }
-
-    //    [Fact]
-    //    public void ShouldCallElasticClientCreateIndex()
-    //    {
-    //        SharedContext.Client.Verify(v => v.CreateIndexAsync(It.IsAny<Func<CreateIndexDescriptor, CreateIndexDescriptor>>()), Times.Once);
-    //    }
-
-    //    [Fact]
-    //    public void ShouldReturnResult()
-    //    {
-    //        _result.Success.Should().BeTrue();
-    //        _result.Contributors.Count().Should().Be(3);
-    //    }
-
-    //    [Fact]
-    //    public void ShouldHaveCalledAllContributors()
-    //    {
-    //        _stubContributors.OfType<StubElasticsearchIndexCreationContributor>()
-    //            .All(x => x.HasContributed)
-    //            .Should()
-    //            .BeTrue();
-    //    }
-    //}
+            var result = strategy.Create();
+            result.Contributors.Count(x => x.HasContributed).Should().Be(2);
+        }
+    }
 }

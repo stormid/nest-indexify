@@ -6,7 +6,7 @@ namespace Nest.Indexify
 {
     public class ElasticsearchIndexCreationStrategyResult : IElasticsearchIndexCreationStrategyResult
     {
-        public ElasticsearchIndexCreationStrategyResult(IEnumerable<IElasticsearchIndexContributor> contributors, bool success, IIndicesOperationResponse indexResponse, Exception exception)
+        public ElasticsearchIndexCreationStrategyResult(IEnumerable<IElasticsearchIndexContributor> contributors, bool success, ICreateIndexResponse indexResponse, Exception exception)
         {
             Contributors = contributors;
             Success = success;
@@ -16,7 +16,7 @@ namespace Nest.Indexify
 
         public IEnumerable<IElasticsearchIndexContributor> Contributors { get; }
         public bool Success { get; }
-        public IIndicesOperationResponse IndexResponse { get; }
+        public ICreateIndexResponse IndexResponse { get; }
         public Exception Exception { get; }
     }
 }

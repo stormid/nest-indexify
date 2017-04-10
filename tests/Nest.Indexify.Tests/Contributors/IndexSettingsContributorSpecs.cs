@@ -2,49 +2,101 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Nest.Indexify.Contributors;
 using Nest.Indexify.Contributors.IndexSettings;
+using Nest.Indexify.Tests.IndexCreationContributorSpecs;
+using Nest.Indexify.Tests.Stubs;
 using Xunit;
 
 namespace Nest.Indexify.Tests.Contributors
 {
     public abstract class IndexSettingsContributorSpecs
     {
-        public class WhenAddDefaultIndexSettings : IndexCreationStrategyContext
+        public class WhenContributingShardValue : IndexCreationStrategyContext
         {
-            protected override IEnumerable<IElasticsearchIndexCreationContributor> Contributors()
+            public WhenContributingShardValue(ElasticClientQueryObjectTestFixture fixture) : base(fixture)
             {
-                yield return new IndexSettingsContributor();
             }
 
+            [Theory]
+            [InlineData(3, 3)]
+            [InlineData(null, null)]
+            [InlineData(-1, null)]
+            public void ShouldConfigureNumberOfShards(int? shards, int? expected)
+            {
+                var strategy = new StubElasticsearchIndexCreationStrategy(Fixture.Client, new NumberOfShardsIndexSettingsContributor(shards));
+                var result = strategy.Create();
+                var indexRequest = Fixture.DeserializeRequestBody<ICreateIndexRequest>(result.IndexResponse.ApiCall);
+
+                indexRequest.Settings.NumberOfShards.Should().Be(expected);
+            }
+        }
+
+        public class WhenContributingReplicaValue : IndexCreationStrategyContext
+        {
+            public WhenContributingReplicaValue(ElasticClientQueryObjectTestFixture fixture) : base(fixture)
+            {
+            }
+
+            [Theory]
+            [InlineData(3, 3)]
+            [InlineData(null, null)]
+            [InlineData(-1, null)]
+            public void ShouldConfigureNumberOfReplicas(int? replicas, int? expected)
+            {
+                var strategy = new StubElasticsearchIndexCreationStrategy(Fixture.Client, new NumberOfReplicasIndexSettingsContributor(replicas));
+                var result = strategy.Create();
+                var indexRequest = Fixture.DeserializeRequestBody<ICreateIndexRequest>(result.IndexResponse.ApiCall);
+
+                indexRequest.Settings.NumberOfReplicas.Should().Be(expected);
+            }
+        }
+
+        public class WhenAddDefaultIndexSettings : IndexCreationStrategyContext
+        {
             [Fact]
             public void ShouldIgnoreShardsSetting()
             {
-                SharedContext.IndexCreateRequest.IndexSettings.NumberOfShards.Should().NotHaveValue();
+                var strategy = new StubElasticsearchIndexCreationStrategy(Fixture.Client, new IndexSettingsContributor());
+                var result = strategy.Create();
+                var indexRequest = Fixture.DeserializeRequestBody<ICreateIndexRequest>(result.IndexResponse.ApiCall);
+                indexRequest.Settings.NumberOfShards.Should().NotHaveValue();
             }
 
             [Fact]
             public void ShouldIgnoreReplicasSetting()
             {
-                SharedContext.IndexCreateRequest.IndexSettings.NumberOfReplicas.Should().NotHaveValue();
+                var strategy = new StubElasticsearchIndexCreationStrategy(Fixture.Client, new IndexSettingsContributor());
+                var result = strategy.Create();
+                var indexRequest = Fixture.DeserializeRequestBody<ICreateIndexRequest>(result.IndexResponse.ApiCall);
+                indexRequest.Settings.NumberOfReplicas.Should().NotHaveValue();
+            }
+
+            public WhenAddDefaultIndexSettings(ElasticClientQueryObjectTestFixture fixture) : base(fixture)
+            {
             }
         }
 
         public class WhenAddDefaultIndexSettingsWithValues : IndexCreationStrategyContext
         {
-            protected override IEnumerable<IElasticsearchIndexCreationContributor> Contributors()
+            [Fact]
+            public void ShouldSetShardsSetting()
             {
-                yield return new IndexSettingsContributor(3, 2);
+                var strategy = new StubElasticsearchIndexCreationStrategy(Fixture.Client, new IndexSettingsContributor(3, 2));
+                var result = strategy.Create();
+                var indexRequest = Fixture.DeserializeRequestBody<ICreateIndexRequest>(result.IndexResponse.ApiCall);
+                indexRequest.Settings.NumberOfShards.Should().HaveValue().And.Be(3);
             }
 
             [Fact]
-            public void ShouldIgnoreShardsSetting()
+            public void ShouldSetReplicasSetting()
             {
-                SharedContext.IndexCreateRequest.IndexSettings.NumberOfShards.Should().HaveValue().And.Be(3);
+                var strategy = new StubElasticsearchIndexCreationStrategy(Fixture.Client, new IndexSettingsContributor(3, 2));
+                var result = strategy.Create();
+                var indexRequest = Fixture.DeserializeRequestBody<ICreateIndexRequest>(result.IndexResponse.ApiCall);
+                indexRequest.Settings.NumberOfReplicas.Should().HaveValue().And.Be(2);
             }
 
-            [Fact]
-            public void ShouldIgnoreReplicasSetting()
+            public WhenAddDefaultIndexSettingsWithValues(ElasticClientQueryObjectTestFixture fixture) : base(fixture)
             {
-                SharedContext.IndexCreateRequest.IndexSettings.NumberOfReplicas.Should().HaveValue().And.Be(2);
             }
         }
     }

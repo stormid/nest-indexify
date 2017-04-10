@@ -16,7 +16,7 @@ namespace Nest.Indexify.Contributors.Analysis.Languages
 
         protected sealed override IEnumerable<KeyValuePair<string, AnalyzerBase>> Build()
         {
-            var languageAnalyzer = new LanguageAnalyzer(Language);
+            var languageAnalyzer = new LanguageAnalyzer { Language = Language };
             BuildLanguageAnalyzerCore(languageAnalyzer);
             yield return new KeyValuePair<string, AnalyzerBase>(Name, languageAnalyzer);
         }

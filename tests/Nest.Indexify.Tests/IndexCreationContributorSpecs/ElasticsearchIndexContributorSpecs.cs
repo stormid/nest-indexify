@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Elasticsearch.Net.Connection;
 using FluentAssertions;
-using Moq;
 using Nest.Indexify.Contributors;
-using Nest.Indexify.Contributors.IndexSettings;
 using Nest.Indexify.Tests.Stubs;
 using Xunit;
 
@@ -36,7 +30,7 @@ namespace Nest.Indexify.Tests.IndexCreationContributorSpecs
         {
             var strategy = new StubElasticsearchIndexCreationStrategy(_fixture.Client);
             var result = strategy.Create();
-            _fixture.ShouldUseHttpMethod("POST");
+            _fixture.ShouldUseHttpMethod("PUT");
             result.Success.Should().BeTrue();
             result.Contributors.All(x => x.HasContributed).Should().BeTrue();
         }
@@ -46,7 +40,7 @@ namespace Nest.Indexify.Tests.IndexCreationContributorSpecs
         {
             var strategy = new StubElasticsearchIndexCreationStrategy(_fixture.Client);
             var result = await strategy.CreateAsync();
-            _fixture.ShouldUseHttpMethod("POST");
+            _fixture.ShouldUseHttpMethod("PUT");
             result.Success.Should().BeTrue();
             result.Contributors.All(x => x.HasContributed).Should().BeTrue();
         }
@@ -66,7 +60,7 @@ namespace Nest.Indexify.Tests.IndexCreationContributorSpecs
         {
             var strategy = new StubElasticsearchIndexCreationStrategy(_fixture.Client);
             var result = await strategy.CreateAsync();
-            _fixture.ShouldUseHttpMethod("POST");
+            _fixture.ShouldUseHttpMethod("PUT");
             result.Success.Should().BeTrue();
             result.Contributors.All(x => x.HasContributed).Should().BeTrue();
 
@@ -86,9 +80,8 @@ namespace Nest.Indexify.Tests.IndexCreationContributorSpecs
         public void CreatingIndex()
         {
             var strategy = new StubElasticsearchIndexCreationStrategy(_fixture.Client);
-            strategy.Create();
-            var response = _fixture.RespondsWith<IndexSettings>();
-            response.Should().NotBeNull();
+            var result = strategy.Create();
+            result.Success.Should().BeTrue();
         }
     }
 
@@ -115,11 +108,7 @@ namespace Nest.Indexify.Tests.IndexCreationContributorSpecs
                 new StubIndexContributor(1)
             };
 
-            contribs.ElementAt(0).Order.Should().Be(1);
-            contribs.ElementAt(1).Order.Should().Be(2);
-            contribs.ElementAt(2).Order.Should().Be(3);
-            contribs.ElementAt(3).Order.Should().Be(4);
-            contribs.ElementAt(4).Order.Should().Be(5);
+            contribs.Should().BeInAscendingOrder(x => x.Order);
         }
     }
 }

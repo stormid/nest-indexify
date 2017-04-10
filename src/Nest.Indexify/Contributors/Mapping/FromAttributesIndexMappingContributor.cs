@@ -8,9 +8,9 @@
             _maxRecursion = maxRecursion;
         }
 
-        protected override PutMappingDescriptor<TType> Mapping(PutMappingDescriptor<TType> descriptor)
+        protected override TypeMappingDescriptor<TType> Mapping(TypeMappingDescriptor<TType> descriptor)
         {
-            return descriptor.MapFromAttributes(_maxRecursion);
+            return descriptor.AutoMap(_maxRecursion);
         }
     }
 }

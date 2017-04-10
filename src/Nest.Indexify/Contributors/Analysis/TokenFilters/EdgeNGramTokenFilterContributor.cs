@@ -5,11 +5,11 @@ namespace Nest.Indexify.Contributors.Analysis.TokenFilters
 	public class EdgeNGramTokenFilterContributor : IndexAnalysisTokenFilterContributor
 	{
 		private readonly string _name;
-		private readonly string _side;
+		private readonly EdgeNGramSide _side;
 		private readonly int _minGram;
 		private readonly int _maxGram;
 
-		public EdgeNGramTokenFilterContributor(string name, string side = "front", int minGram = 3, int maxGram = 10, int order = 0) : base(order)
+		public EdgeNGramTokenFilterContributor(string name, EdgeNGramSide side = EdgeNGramSide.Front, int minGram = 3, int maxGram = 10, int order = 0) : base(order)
 		{
 			_name = name;
 			_side = side;

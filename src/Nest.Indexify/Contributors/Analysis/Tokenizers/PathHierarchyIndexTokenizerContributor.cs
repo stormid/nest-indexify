@@ -5,13 +5,13 @@ namespace Nest.Indexify.Contributors.Analysis.Tokenizers
     public class PathHierarchyIndexTokenizerContributor : IndexAnalysisTokenizerContributor
     {
         private readonly string _name;
-        private readonly string _delimiter;
+        private readonly char? _delimiter;
         private readonly bool? _reverse;
         private readonly int? _bufferSize;
-        private readonly string _replacement;
+        private readonly char? _replacement;
         private readonly int? _skip;
 
-        public PathHierarchyIndexTokenizerContributor(string name = "indexify_path", string delimiter = null, int? skip = null, string replacement = null, int? bufferSize = null, bool? reverse = null)
+        public PathHierarchyIndexTokenizerContributor(string name = "indexify_path", char? delimiter = null, int? skip = null, char? replacement = null, int? bufferSize = null, bool? reverse = null)
         {
             _name = name;
             _delimiter = delimiter;

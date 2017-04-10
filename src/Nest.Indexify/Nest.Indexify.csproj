@@ -1,114 +1,72 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8C0BDDEA-C3B4-4355-A549-D67423CADD17}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Nest.Indexify</RootNamespace>
+    <TargetFrameworks>net452;net46;netstandard1.6</TargetFrameworks>
     <AssemblyName>Nest.Indexify</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <RootNamespace>Nest.Indexify</RootNamespace>
+    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.6' ">1.6.0</NetStandardImplicitPackageVersion>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <PropertyGroup>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageId>Nest.Indexify</PackageId>
+    <Authors>Phil Oyston, Storm ID</Authors>
+    <Company>Storm ID</Company>
+    <Description>Index abstraction</Description>
+    <Copyright>Phil Oyston, Storm ID Ltd.</Copyright>
+    <PackageIconUrl>https://www.stormid.com/content/img/icons/apple-touch-icon.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/stormid/Nest-Indexify</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/stormid/Nest-Indexify/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageTags>elasticsearch nest</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Elasticsearch.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Elasticsearch.Net.1.6.0\lib\net45\Elasticsearch.Net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Nest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NEST.1.6.0\lib\net45\Nest.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' or '$(TargetFramework)' == 'net46' ">
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\..\VersionAssemblyInfo.cs">
-      <Link>Properties\VersionAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Contributors\Analysis\Analyzers\IndexAnalysisAnalyzerContributor.cs" />
-    <Compile Include="Contributors\Analysis\CharFilters\HtmlStripCharFilterContributor.cs" />
-    <Compile Include="Contributors\Analysis\CharFilters\IndexAnalysisCharFilterContributor.cs" />
-    <Compile Include="Contributors\Analysis\CharFilters\MappingCharFilterContributor.cs" />
-    <Compile Include="Contributors\Analysis\CharFilters\PatternReplaceCharFilterContributor.cs" />
-    <Compile Include="Contributors\Analysis\Languages\IndexLanguageAnalysisContributor.cs" />
-    <Compile Include="Contributors\Analysis\IndexAnalysisContributor.cs" />
-    <Compile Include="Contributors\Analysis\Phonetic\PhoneticIndexAnalysisContributor.cs" />
-    <Compile Include="Contributors\Analysis\Phonetic\PhoneticIndexAnalyzerContributor.cs" />
-    <Compile Include="Contributors\Analysis\TokenFilters\EdgeNGramTokenFilterContributor.cs" />
-    <Compile Include="Contributors\Analysis\TokenFilters\IndexAnalysisTokenFilterContributor.cs" />
-    <Compile Include="Contributors\Analysis\TokenFilters\PhoneticIndexTokenFilterContributor.cs" />
-    <Compile Include="Contributors\Analysis\Tokenizers\IndexAnalysisTokenizerContributor.cs" />
-    <Compile Include="Contributors\Analysis\Autocomplete\AutoCompleteAnalyzerContributor.cs" />
-    <Compile Include="Contributors\Analysis\Autocomplete\AutoCompleteIndexAnalysisContributor.cs" />
-    <Compile Include="Contributors\Analysis\Tokenizers\PathHierarchyIndexTokenizerContributor.cs" />
-    <Compile Include="Contributors\CompositeElasticsearchIndexCreationContributor.cs" />
-    <Compile Include="Contributors\Analysis\Languages\EnglishIndexAnalysisContributor.cs" />
-    <Compile Include="Contributors\ElasticsearchIndexContributor.cs" />
-    <Compile Include="Contributors\IElasticsearchIndexContributor.cs" />
-    <Compile Include="Contributors\IElasticsearchIndexCreationFailureContributor.cs" />
-    <Compile Include="Contributors\IElasticsearchIndexCreationSuccessContributor.cs" />
-    <Compile Include="Contributors\IElasticsearchIndexPreCreationContributor.cs" />
-    <Compile Include="Contributors\IndexSettings\AddAliasIndexSettingsContributor.cs" />
-    <Compile Include="Contributors\IndexSettings\IndexSettingsContributor.cs" />
-    <Compile Include="Contributors\IndexSettings\NumberOfReplicasIndexSettingsContributor.cs" />
-    <Compile Include="Contributors\IndexSettings\NumberOfShardsIndexSettingsContributor.cs" />
-    <Compile Include="Contributors\Mapping\FromAttributesIndexMappingContributor.cs" />
-    <Compile Include="Contributors\ElasticsearchIndexCreationContributor.cs" />
-    <Compile Include="Contributors\Mapping\IndexMappingContributor.cs" />
-    <Compile Include="ElasticsearchIndexCreationStrategy.cs" />
-    <Compile Include="Contributors\IElasticsearchIndexCreationContributor.cs" />
-    <Compile Include="ElasticsearchIndexCreationStrategyResult.cs" />
-    <Compile Include="IElasticsearchIndexCreationStrategy.cs" />
-    <Compile Include="IElasticsearchIndexCreationStrategyResult.cs" />
-    <Compile Include="IndexCreationStrategyException.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Remove="Contributors\Analysis\Analyzers\**" />
+    <Compile Remove="Contributors\Analysis\Autocomplete\**" />
+    <Compile Remove="Contributors\Analysis\CharFilters\**" />
+    <Compile Remove="Contributors\Analysis\English\**" />
+    <Compile Remove="Contributors\Analysis\Languages\**" />
+    <Compile Remove="Contributors\Analysis\Phonetic\**" />
+    <Compile Remove="Contributors\Analysis\TokenFilters\**" />
+    <Compile Remove="Contributors\Analysis\Tokenizers\**" />
+    <EmbeddedResource Remove="Contributors\Analysis\Analyzers\**" />
+    <EmbeddedResource Remove="Contributors\Analysis\Autocomplete\**" />
+    <EmbeddedResource Remove="Contributors\Analysis\CharFilters\**" />
+    <EmbeddedResource Remove="Contributors\Analysis\English\**" />
+    <EmbeddedResource Remove="Contributors\Analysis\Languages\**" />
+    <EmbeddedResource Remove="Contributors\Analysis\Phonetic\**" />
+    <EmbeddedResource Remove="Contributors\Analysis\TokenFilters\**" />
+    <EmbeddedResource Remove="Contributors\Analysis\Tokenizers\**" />
+    <None Remove="Contributors\Analysis\Analyzers\**" />
+    <None Remove="Contributors\Analysis\Autocomplete\**" />
+    <None Remove="Contributors\Analysis\CharFilters\**" />
+    <None Remove="Contributors\Analysis\English\**" />
+    <None Remove="Contributors\Analysis\Languages\**" />
+    <None Remove="Contributors\Analysis\Phonetic\**" />
+    <None Remove="Contributors\Analysis\TokenFilters\**" />
+    <None Remove="Contributors\Analysis\Tokenizers\**" />
   </ItemGroup>
+
+
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Nest.Indexify.nuspec" />
-    <None Include="packages.config" />
+    <Compile Include="..\..\VersionAssemblyInfo.cs" Link="VersionAssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <Folder Include="Contributors\Analysis\English\" />
+    <PackageReference Include="NEST" Version="5.3.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <ItemGroup>
+    <Folder Include="Contributors\Analysis\CharFilters\" />
+  </ItemGroup>
 </Project>

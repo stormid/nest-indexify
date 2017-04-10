@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Nest.Indexify.Contributors.PreCreate
 {
@@ -16,9 +12,9 @@ namespace Nest.Indexify.Contributors.PreCreate
             return _indexName;
         }
 
-        public void OnSuccess(IElasticClient client, IIndicesOperationResponse response)
+        public void OnSuccess(IElasticClient client, ICreateIndexResponse response)
         {
-            client.Alias(a => a.Add(aa => aa.Alias(client.Infer.DefaultIndex).Index(_indexName)));
+            client.Alias(a => a.Add(aa => aa.Alias(client.ConnectionSettings.DefaultIndex).Index(_indexName)));
         }
     }
 }

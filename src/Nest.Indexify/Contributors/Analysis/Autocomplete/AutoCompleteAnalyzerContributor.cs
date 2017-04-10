@@ -16,7 +16,7 @@ namespace Nest.Indexify.Contributors.Analysis.Autocomplete
 
 	    protected override bool CanContributeCore(ICreateIndexRequest indexRequest, IElasticClient client)
 	    {
-	        return indexRequest.IndexSettings.Analysis.TokenFilters.ContainsKey(_tokenFilter);
+	        return indexRequest.Settings.Analysis.TokenFilters.ContainsKey(_tokenFilter);
 	    }
 
 	    protected override IEnumerable<KeyValuePair<string, AnalyzerBase>> Build()

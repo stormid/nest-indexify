@@ -5,9 +5,9 @@ namespace Nest.Indexify.Contributors.Analysis.TokenFilters
 	public class PhoneticIndexTokenFilterContributor : IndexAnalysisTokenFilterContributor
 	{
 		private readonly string _name;
-		private readonly string _encoder;
+		private readonly PhoneticEncoder _encoder;
 
-		public PhoneticIndexTokenFilterContributor(string name, string encoder = "metaphone")
+		public PhoneticIndexTokenFilterContributor(string name, PhoneticEncoder encoder = PhoneticEncoder.Metaphone)
 		{
 			_name = name;
 			_encoder = encoder;
